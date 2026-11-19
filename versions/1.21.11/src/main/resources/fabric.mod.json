@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "fancyhealth",
+  "version": "${version}",
+  "name": "Fancy Health Indicators",
+  "description": "Health bars above heads, under the crosshair and at the top of the screen, floating damage numbers with fonts and animations, presets and a live-preview config screen.",
+  "authors": [
+    "BbIJABNPOBATEJb"
+  ],
+  "contact": {
+    "sources": "https://github.com/BbIJABNPOBATEJb/Fancy-Health-Indicators",
+    "issues": "https://github.com/BbIJABNPOBATEJb/Fancy-Health-Indicators/issues"
+  },
+  "license": "MIT",
+  "icon": "assets/fancyhealth/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "me.bbijabnpobatejb.fancyhealth.compat.FancyHealthClient"
+    ],
+    "modmenu": [
+      "me.bbijabnpobatejb.fancyhealth.compat.ModMenuEntry"
+    ]
+  },
+  "mixins": [
+    "fancyhealth.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "fabric-api": "*",
+    "minecraft": "${range}",
+    "java": ">=21"
+  },
+  "suggests": {
+    "modmenu": "*"
+  }
+}

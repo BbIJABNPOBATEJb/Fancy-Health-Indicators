@@ -1,0 +1,19 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "me.bbijabnpobatejb.fancyhealth.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "client": [
+    "ClientPacketListenerMixin",
+    "HudMixin",
+    "LivingEntityMixin",
+    "MinecraftMixin",
+    "MultiPlayerGameModeMixin",
+    "OptionsAccessor",
+    "OptionsMixin",
+    "ScreenRectangleMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

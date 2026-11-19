@@ -1,0 +1,90 @@
+{
+  "ui.hover": {
+    "sounds": [
+      {
+        "name": "fancyhealth:ui/hover",
+        "stream": false
+      }
+    ]
+  },
+  "ui.click": {
+    "sounds": [
+      {
+        "name": "fancyhealth:ui/click",
+        "stream": false
+      }
+    ]
+  },
+  "ui.toggle_on": {
+    "sounds": [
+      {
+        "name": "fancyhealth:ui/toggle_on",
+        "stream": false
+      }
+    ]
+  },
+  "ui.toggle_off": {
+    "sounds": [
+      {
+        "name": "fancyhealth:ui/toggle_off",
+        "stream": false
+      }
+    ]
+  },
+  "ui.tick": {
+    "sounds": [
+      {
+        "name": "fancyhealth:ui/tick",
+        "stream": false
+      }
+    ]
+  },
+  "ui.tab": {
+    "sounds": [
+      {
+        "name": "fancyhealth:ui/tab",
+        "stream": false
+      }
+    ]
+  },
+  "ui.open": {
+    "sounds": [
+      {
+        "name": "fancyhealth:ui/open",
+        "stream": false
+      }
+    ]
+  },
+  "ui.close": {
+    "sounds": [
+      {
+        "name": "fancyhealth:ui/close",
+        "stream": false
+      }
+    ]
+  },
+  "ui.reset": {
+    "sounds": [
+      {
+        "name": "fancyhealth:ui/reset",
+        "stream": false
+      }
+    ]
+  },
+  "ui.success": {
+    "sounds": [
+      {
+        "name": "fancyhealth:ui/success",
+        "stream": false
+      }
+    ]
+  },
+  "ui.error": {
+    "sounds": [
+      {
+        "name": "fancyhealth:ui/error",
+        "stream": false
+      }
+    ]
+  }
+}

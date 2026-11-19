@@ -1,0 +1,92 @@
+version = project.mod_version
+group = 'me.bbijabnpobatejb'
+
+base {
+    archivesName = "fancyhealth-${project.minecraft_version}"
+}
+
+repositories {
+    mavenCentral()
+}
+
+def common = rootProject.file('../../common')
+def stand = rootProject.file('../../stand/dev')
+
+sourceSets {
+    main {
+        java.srcDirs += new File(common, 'src/main/java')
+        resources.srcDirs += new File(common, 'src/main/resources')
+    }
+    dev {
+        java.srcDirs += new File(stand, 'java')
+        resources.srcDirs += new File(stand, 'resources')
+        compileClasspath += main.compileClasspath + main.output
+        runtimeClasspath += main.runtimeClasspath + main.output
+    }
+}
+
+dependencies {
+    compileOnly 'org.projectlombok:lombok:1.18.48'
+    annotationProcessor 'org.projectlombok:lombok:1.18.48'
+    devCompileOnly 'org.projectlombok:lombok:1.18.48'
+    devAnnotationProcessor 'org.projectlombok:lombok:1.18.48'
+}
+
+loom {
+    mods {
+        fancyhealth { sourceSet sourceSets.main }
+        fancyhealthdev { sourceSet sourceSets.dev }
+    }
+    runs {
+        client {
+            source sourceSets.dev
+            programArgs '--username', 'FancyLab'
+        }
+    }
+}
+
+processResources {
+    inputs.property 'version', project.version
+    inputs.property 'range', project.minecraft_range
+    filesMatching('fabric.mod.json') {
+        expand 'version': project.version, 'range': project.minecraft_range
+    }
+}
+
+java {
+    toolchain.languageVersion = JavaLanguageVersion.of(25)
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.release = project.java_release as int
+}
+
+jar {
+    exclude 'com/terraformersmc/**'
+    from(rootProject.file('../../LICENSE'))
+}
+
+tasks.register('writeClientArgs') {
+    dependsOn 'classes', 'devClasses', 'configureClientLaunch'
+    def runClient = tasks.named('runClient')
+    def target = layout.buildDirectory.file('launch/client.args')
+    outputs.file(target)
+    outputs.upToDateWhen { false }
+    doLast {
+        def run = runClient.get()
+        def bs = '\\'
+        def quote = { String value -> '"' + value.replace(bs, bs + bs).replace('"', bs + '"') + '"' }
+        def lines = []
+        run.allJvmArgs.collect { it.toString() }
+                .findAll { !it.startsWith('@') }
+                .each { lines << quote(it) }
+        lines << '-classpath'
+        lines << quote(run.classpath.files.collect { it.absolutePath }.join(File.pathSeparator))
+        lines << quote(run.mainClass.get())
+        def file = target.get().asFile
+        file.parentFile.mkdirs()
+        file.setText(lines.join(System.lineSeparator()) + System.lineSeparator(), 'UTF-8')
+        println "client args -> ${file}"
+    }
+}

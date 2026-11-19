@@ -1,0 +1,30 @@
+{
+  "providers": [
+    {
+      "type": "bitmap",
+      "file": "fancyhealth:font/chunky.png",
+      "height": 8,
+      "ascent": 7,
+      "chars": [
+        "01234567",
+        "89+-.,!%",
+        "/x\u2726\u2764\u0000\u0000\u0000\u0000"
+      ]
+    },
+    {
+      "type": "reference",
+      "id": "minecraft:include/space"
+    },
+    {
+      "type": "reference",
+      "id": "minecraft:include/default",
+      "filter": {
+        "uniform": false
+      }
+    },
+    {
+      "type": "reference",
+      "id": "minecraft:include/unifont"
+    }
+  ]
+}
