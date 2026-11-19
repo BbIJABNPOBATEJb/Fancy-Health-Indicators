@@ -26,4 +26,14 @@ public interface Platform {
     List<EntityType<? extends LivingEntity>> previewTypes();
 
     float[] displayOffset(Transformation transformation);
+
+    void openUrl(String url);
+
+    String modVersion();
+
+    String minecraftVersion();
+
+    String loader();
+
+    int heartType(net.minecraft.world.entity.LivingEntity entity);
 }

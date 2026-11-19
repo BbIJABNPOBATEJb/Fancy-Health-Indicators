@@ -13,7 +13,7 @@
   <b>English</b> | <a href="README.ru.md">Русский</a>
 </p>
 
-![Bars and damage numbers](docs/img/hero.jpg)
+![Bars and damage numbers](docs/img/fight.gif)
 
 Works on any server: everything is drawn on your side, the server doesn't need anything installed.
 
@@ -22,13 +22,17 @@ Works on any server: everything is drawn on your side, the server doesn't need a
 - **Health bars** above the head, above or below the nametag, on the body, under the crosshair, or as a target frame
   at the top of the screen.
 - **The name above the bar** has its own size, font, color and effect.
-- **Ten bar styles**: flat, glossy, rounded, segmented, slanted, neon, MMO plate, thin line, hearts, text only.
+- **Twelve bar styles**: flat, glossy, rounded, segmented, slanted, neon, MMO plate, thin line, hearts, hearts from the game HUD,
+  scoreboard line under the nick (`20 ❤`, like the vanilla belowname) and text only.
+- **Big mobs**: more than 10 hearts are shown in rows like the game HUD, as colored layers of 20 HP, or as one heart
+  with a number. Poison, wither and freezing change the hearts like in the HUD.
 - **HP drain**: the lost part of the bar holds for a moment and then drains away; the delay, speed and colors are yours.
   A hit flashes only the part that was lost.
 - **Damage numbers**: pop, rise, fountain, bounce, zoom slam, shake, slide, spiral and a stacked log. Crits get their own
   animation, size, color and mark. Colors by damage type (fire, magic, fall…), quick hits merge into one number.
 - **12 fonts** for bars and numbers, with shadow, outline, thick outline or glow.
-- **9 presets**: Classic, MMO, Hearts, Hologram, Arcade, Minimal, PvP, Boss bar, Comic. Each shows a live sample.
+- **11 presets**: Classic, MMO, Hearts, Game hearts, Scoreboard, Hologram, Arcade, Minimal, PvP, Boss bar, Comic.
+  Each shows a live sample.
 - **Live preview**: the mob on the right reacts to every change — pick an animation and a number flies out,
   move a slider and the bar moves. LMB hits, RMB crits, MMB heals.
 - **Search** over all settings: by name, by value, by category, by color (`red`, `#ff0000`), by typos or a wrong
@@ -45,6 +49,7 @@ Works on any server: everything is drawn on your side, the server doesn't need a
 | ![Classic](docs/img/hero.jpg) Classic | ![MMO](docs/img/preset-mmo.jpg) MMO | ![Hologram](docs/img/preset-holo.jpg) Hologram |
 | ![Hearts](docs/img/preset-hearts.jpg) Hearts | ![Arcade](docs/img/preset-arcade.jpg) Arcade | ![PvP](docs/img/preset-pvp.jpg) PvP |
 | ![Comic](docs/img/preset-comic.jpg) Comic | ![Minimal](docs/img/preset-minimal.jpg) Minimal | ![Boss bar](docs/img/preset-boss.jpg) Boss bar |
+| ![Game hearts](docs/img/preset-game_hearts.jpg) Game hearts | ![Scoreboard](docs/img/preset-scoreboard.jpg) Scoreboard | |
 
 A preset is a starting point: change anything after it and the preset becomes "Custom".
 
@@ -54,6 +59,8 @@ Open with `H` (Controls → Fancy Health Indicators) or through Mod Menu. The sw
 and a separate key for that can be bound in the controls.
 
 ![Settings](docs/img/menu-overhead.jpg)
+
+![Live preview](docs/img/preview.gif)
 
 | | |
 |---|---|
@@ -70,6 +77,45 @@ and a separate key for that can be bound in the controls.
 | | |
 |---|---|
 | ![Crosshair and target frame](docs/img/crosshair-target.jpg) Bar under the crosshair and the target frame | ![Nametags](docs/img/nametags.jpg) Bars above a server nametag |
+
+## For server owners
+
+The mod can be limited per server without any plugin: send one of these codes in a chat message, or put it into the server
+MOTD. The codes are invisible, and a message made only of codes doesn't show up in chat at all.
+
+| Code | Turns off |
+|---|---|
+| `§h§p§j` | the whole mod |
+| `§h§p§g` | bars (above head, under the crosshair, target frame) |
+| `§h§p§q` | damage numbers |
+| `§h§p§s` | bars and numbers on other players |
+| `§h§p§w` | bars behind walls, even when the nametag is visible there |
+| `§h§p§z` | everything above, back on |
+
+Codes can be combined in one message. They last until the player leaves the server, and the settings screen shows the
+player what the server turned off.
+
+Bukkit / Paper:
+
+```java
+@EventHandler
+public void onJoin(PlayerJoinEvent event) {
+    event.getPlayer().sendMessage("§h§p§s§h§p§q");
+}
+```
+
+Other client mods can do the same through the API:
+
+```java
+FancyHealthApi.restrict("mymod", Restriction.PLAYERS, Restriction.NUMBERS);
+FancyHealthApi.clear("mymod");
+```
+
+## Updates
+
+When a new version is out on Modrinth, a small card shows up in the corner of the settings screen with Download, Hide and
+Don't remind. The check is one request to the Modrinth API when the settings are opened for the first time; it can be
+turned off in General.
 
 ## Install
 

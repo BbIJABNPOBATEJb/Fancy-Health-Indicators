@@ -11,6 +11,7 @@ import me.bbijabnpobatejb.fancyhealth.config.CritMark;
 import me.bbijabnpobatejb.fancyhealth.config.FhConfig;
 import me.bbijabnpobatejb.fancyhealth.config.FontChoice;
 import me.bbijabnpobatejb.fancyhealth.config.HudPos;
+import me.bbijabnpobatejb.fancyhealth.config.ManyHearts;
 import me.bbijabnpobatejb.fancyhealth.config.NumberFormat;
 import me.bbijabnpobatejb.fancyhealth.config.Occlusion;
 import me.bbijabnpobatejb.fancyhealth.config.Presets;
@@ -313,6 +314,14 @@ public class ConfigUi implements Rows.Host {
         if (searching()) {
             Component pc = Theme.ui(Component.translatable("fancyhealth.search.count", resultCount).getString());
             Theme.small(c, pc, listX1 - 10 - Theme.width(pc) * 0.8f, 15, Theme.TEXT3);
+        } else if (tab != Tab.PRESETS && !me.bbijabnpobatejb.fancyhealth.api.FancyHealthApi.active().isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (me.bbijabnpobatejb.fancyhealth.api.Restriction r : me.bbijabnpobatejb.fancyhealth.api.FancyHealthApi.active()) {
+                if (sb.length() > 0) sb.append(", ");
+                sb.append(Component.translatable("fancyhealth.restriction." + r.name().toLowerCase(java.util.Locale.ROOT)).getString());
+            }
+            Component pc = Theme.ui(Component.translatable("fancyhealth.server.limited", sb.toString()).getString());
+            Theme.small(c, pc, listX1 - 10 - Theme.width(pc) * 0.8f, 15, Theme.ORANGE);
         } else if (tab == Tab.PRESETS) {
             float importX0 = listX1 - 10 - buttonWidth("fancyhealth.button.import");
             headerButton(c, "fancyhealth.button.import", importX0, listX1 - 10, hmx, my);
@@ -440,6 +449,7 @@ public class ConfigUi implements Rows.Host {
             Theme.rrect(c, tx, ty, tx + tw, ty + 18, 9, (int) (a * 0xF0) << 24 | 0x2C2C2E);
             Theme.text(c, t, tx + 10, ty + 5, Colors.alpha(toastColor, a));
         }
+        updateCard(c, hmx, my, dt);
         if (popup != null) popup.render(c, mx, my, dt);
     }
 
@@ -539,7 +549,71 @@ public class ConfigUi implements Rows.Host {
         }
     }
 
+    private static final float CARD_W = 178;
+    private static final float CARD_H = 52;
+    private float updateAnim;
+    private String updateShown;
+
+    private float[] cardRect() {
+        float x0 = width - 8 - CARD_W + (1 - updateAnim) * (CARD_W + 12), y0 = height - 8 - CARD_H;
+        return new float[]{x0, y0, x0 + CARD_W, y0 + CARD_H};
+    }
+
+    private float[][] cardButtons() {
+        float[] r = cardRect();
+        String[] keys = {"fancyhealth.update.download", "fancyhealth.update.hide", "fancyhealth.update.never"};
+        float[][] out = new float[3][];
+        float x = r[0] + 10;
+        for (int i = 0; i < 3; i++) {
+            float w = Theme.width(Theme.tr(keys[i])) * 0.8f + 14;
+            out[i] = new float[]{x, r[3] - 20, x + w, r[3] - 7};
+            x += w + 5;
+        }
+        return out;
+    }
+
+    private void updateCard(Canvas c, double mx, double my, float dt) {
+        String latest = UpdateCheck.latest();
+        if (latest != null) updateShown = latest;
+        updateAnim += ((latest != null ? 1 : 0) - updateAnim) * Math.min(1f, dt * 9f);
+        if (updateAnim < 0.01f || updateShown == null) return;
+        float[] r = cardRect();
+        Theme.shadow(c, r[0], r[1], r[2], r[3], 12, (int) (150 * updateAnim));
+        Theme.rrect(c, r[0], r[1], r[2], r[3], 12, 0xF62C2C2E);
+        Theme.icon(c, 0, r[0] + 16, r[1] + 13, 9, Theme.ORANGE);
+        Theme.text(c, Theme.bold(Component.translatable("fancyhealth.update.title", updateShown).getString()), r[0] + 25, r[1] + 9, Theme.TEXT);
+        String[] keys = {"fancyhealth.update.download", "fancyhealth.update.hide", "fancyhealth.update.never"};
+        float[][] b = cardButtons();
+        for (int i = 0; i < 3; i++) {
+            boolean over = Theme.in(mx, my, b[i][0], b[i][1], b[i][2], b[i][3]);
+            int bg = i == 0 ? (over ? 0xFF409CFF : Theme.BLUE) : (over ? 0xFF48484A : 0xFF3A3A3C);
+            Theme.rrect(c, b[i][0], b[i][1], b[i][2], b[i][3], 6, bg);
+            Theme.small(c, Theme.tr(keys[i]), b[i][0] + 7, b[i][1] + 3.5f, i == 0 ? 0xFFFFFFFF : Theme.TEXT);
+        }
+    }
+
+    private boolean clickUpdate(double mx, double my) {
+        if (updateAnim < 0.5f || UpdateCheck.latest() == null) return false;
+        float[] r = cardRect();
+        if (!Theme.in(mx, my, r[0], r[1], r[2], r[3])) return false;
+        float[][] b = cardButtons();
+        if (Theme.in(mx, my, b[0][0], b[0][1], b[0][2], b[0][3]) && UpdateCheck.url() != null) {
+            me.bbijabnpobatejb.fancyhealth.FancyHealth.platform().openUrl(UpdateCheck.url());
+            UpdateCheck.hidden = true;
+        } else if (Theme.in(mx, my, b[1][0], b[1][1], b[1][2], b[1][3])) {
+            UpdateCheck.hidden = true;
+        } else if (Theme.in(mx, my, b[2][0], b[2][1], b[2][2], b[2][3])) {
+            ConfigStore.get().general.updateCheck = false;
+            markDirty();
+        } else {
+            return true;
+        }
+        Sounds.play("click");
+        return true;
+    }
+
     public boolean mouseDown(double mx, double my, int button, boolean shiftDown) {
+        if (clickUpdate(mx, my)) return true;
         if (searchFocus && !(mx < sideW && my >= SEARCH_Y0 && my < SEARCH_Y1)) searchFocus = false;
         if (editing != null) {
             boolean inside = Theme.in(mx, my, editing.x, editing.y, editing.x + editing.w, editing.y + editing.height);
@@ -816,6 +890,7 @@ public class ConfigUi implements Rows.Host {
 
     public void open() {
         Sounds.play("open");
+        UpdateCheck.start();
     }
 
     private static String k(String s) {
@@ -913,6 +988,7 @@ public class ConfigUi implements Rows.Host {
                 r.add(new Rows.Slider(k("fade_speed"), 1f, 20f, 0.5f, "", c -> c.general.fadeSpeed, (c, v) -> c.general.fadeSpeed = v));
                 r.add(new Rows.Header(k("section.interface")));
                 r.add(new Rows.Toggle(k("ui_sounds"), c -> c.general.uiSounds, (c, v) -> c.general.uiSounds = v));
+                r.add(new Rows.Toggle(k("update_check"), c -> c.general.updateCheck, (c, v) -> c.general.updateCheck = v));
                 r.add(new Rows.Slider(k("ui_volume"), 0f, 1f, 0.05f, "", c -> c.general.uiVolume, (c, v) -> c.general.uiVolume = v));
                 r.add(new Rows.Header(k("section.compat")));
                 r.add(new Rows.Toggle(k("server_nametags"), c -> c.general.serverNametags, (c, v) -> c.general.serverNametags = v));
@@ -927,6 +1003,7 @@ public class ConfigUi implements Rows.Host {
         r.add(new Rows.Cycle<>(k("style"), BarStyle.values(), c -> l.apply(c).style, (c, v) -> l.apply(c).style = v));
         r.add(new Rows.Slider(k("width"), 10f, 240f, 1f, "px", c -> (float) l.apply(c).width, (c, v) -> l.apply(c).width = Math.round(v)));
         r.add(new Rows.Slider(k("height"), 1f, 16f, 1f, "px", c -> (float) l.apply(c).height, (c, v) -> l.apply(c).height = Math.round(v)));
+        r.add(new Rows.Cycle<>(k("many_hearts"), ManyHearts.values(), c -> l.apply(c).manyHearts, (c, v) -> l.apply(c).manyHearts = v).needs(k("style"), c -> l.apply(c).style == BarStyle.HEARTS || l.apply(c).style == BarStyle.GAME_HEARTS, c -> l.apply(c).style = BarStyle.GAME_HEARTS));
         r.add(new Rows.Slider(k("segments"), 2f, 40f, 1f, "", c -> (float) l.apply(c).segments, (c, v) -> l.apply(c).segments = Math.round(v)).needs(k("style"), c -> l.apply(c).style == BarStyle.SEGMENTED, c -> l.apply(c).style = BarStyle.SEGMENTED));
         r.add(new Rows.Header(k("section.text")));
         r.add(new Rows.Toggle(k("show_name"), c -> l.apply(c).showName, (c, v) -> l.apply(c).showName = v));

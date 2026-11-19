@@ -38,7 +38,7 @@ public class EntityFilter {
         if (!c.filters.blacklist.isEmpty() && c.filters.blacklist.contains(BuiltInRegistries.ENTITY_TYPE.getKey(e.getType()).toString())) return false;
         if (e == mc.player) return c.general.selfInThirdPerson && !mc.options.getCameraType().isFirstPerson();
         if (isNpc(e)) return c.filters.npcs;
-        if (e instanceof Player) return c.filters.players;
+        if (e instanceof Player) return c.filters.players && me.bbijabnpobatejb.fancyhealth.api.FancyHealthApi.allowed(me.bbijabnpobatejb.fancyhealth.api.Restriction.PLAYERS);
         if (isBoss(e)) return c.filters.bosses;
         if (e instanceof Enemy) return c.filters.hostile;
         if (e instanceof NeutralMob) return c.filters.neutral;

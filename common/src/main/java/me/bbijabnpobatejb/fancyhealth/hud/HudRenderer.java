@@ -43,7 +43,7 @@ public class HudRenderer {
     }
 
     private boolean active(Minecraft mc, FhConfig c) {
-        if (!c.general.enabled || mc.level == null || mc.player == null) return false;
+        if (!c.general.enabled || mc.level == null || mc.player == null || !me.bbijabnpobatejb.fancyhealth.api.FancyHealthApi.allowed(me.bbijabnpobatejb.fancyhealth.api.Restriction.ALL)) return false;
         return !(c.general.hideWithF1 && FancyHealth.platform().hudHidden());
     }
 
@@ -57,19 +57,23 @@ public class HudRenderer {
         HealthTracker.frame(dt);
         canvas.push();
         canvas.identity();
-        if (c.overhead.enabled) overhead(canvas, mc, c, pt);
+        if (c.overhead.enabled && me.bbijabnpobatejb.fancyhealth.api.FancyHealthApi.allowed(me.bbijabnpobatejb.fancyhealth.api.Restriction.BARS)) overhead(canvas, mc, c, pt);
         DamageNumbers.render(canvas, pt, dt);
         canvas.pop();
     }
 
+    public Runnable devFrame;
+
     public void renderOverlay(Canvas canvas, float pt) {
+        if (devFrame != null) devFrame.run();
         Minecraft mc = Minecraft.getInstance();
         FhConfig c = FancyHealth.config();
         if (!active(mc, c) || FancyHealth.platform().screen() instanceof me.bbijabnpobatejb.fancyhealth.ui.FhScreenBase) return;
         canvas.push();
         canvas.identity();
-        if (c.crosshair.enabled) CrosshairHud.render(canvas, mc, c, dt);
-        if (c.target.enabled) TargetHud.render(canvas, mc, c, dt);
+        boolean bars = me.bbijabnpobatejb.fancyhealth.api.FancyHealthApi.allowed(me.bbijabnpobatejb.fancyhealth.api.Restriction.BARS);
+        if (c.crosshair.enabled && bars) CrosshairHud.render(canvas, mc, c, dt);
+        if (c.target.enabled && bars) TargetHud.render(canvas, mc, c, dt);
         canvas.pop();
     }
 
@@ -110,7 +114,10 @@ public class HudRenderer {
             alpha *= Math.max(0f, s.occl);
             if (alpha <= 0.02f) continue;
             float f = c.overhead.scale;
-            if (c.overhead.sizeMode == SizeMode.WORLD) f *= Projection.nearness(en.dist, 7.0, 0.3f, 3.2f);
+            if (c.overhead.sizeMode == SizeMode.WORLD) {
+                f *= c.overhead.look.style == me.bbijabnpobatejb.fancyhealth.config.BarStyle.NAMETAG
+                        ? Projection.pixelsPerBlock(en.dist, h) * 0.025f : Projection.nearness(en.dist, 7.0, 0.3f, 3.2f);
+            }
             MODEL.set(s);
             boolean drawName = !en.nameShown;
             canvas.push();

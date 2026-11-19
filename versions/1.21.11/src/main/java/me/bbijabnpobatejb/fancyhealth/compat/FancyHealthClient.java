@@ -59,4 +59,31 @@ public class FancyHealthClient implements ClientModInitializer, Platform {
     public float[] displayOffset(Transformation t) {
         return new float[]{t.getTranslation().y(), t.getScale().y()};
     }
+
+    @Override
+    public int heartType(LivingEntity entity) {
+        if (entity.hasEffect(net.minecraft.world.effect.MobEffects.POISON)) return 1;
+        if (entity.hasEffect(net.minecraft.world.effect.MobEffects.WITHER)) return 2;
+        return entity.isFullyFrozen() ? 3 : 0;
+    }
+
+    @Override
+    public String modVersion() {
+        return net.fabricmc.loader.api.FabricLoader.getInstance().getModContainer("fancyhealth").map(c -> c.getMetadata().getVersion().getFriendlyString()).orElse("0");
+    }
+
+    @Override
+    public String minecraftVersion() {
+        return net.fabricmc.loader.api.FabricLoader.getInstance().getModContainer("minecraft").map(c -> c.getMetadata().getVersion().getFriendlyString()).orElse("");
+    }
+
+    @Override
+    public String loader() {
+        return "fabric";
+    }
+
+    @Override
+    public void openUrl(String url) {
+        net.minecraft.util.Util.getPlatform().openUri(url);
+    }
 }

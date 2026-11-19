@@ -49,7 +49,7 @@ public class DamageNumbers {
 
     public void spawn(LivingEntity e, float amount, float maxHp, DamageKind kind, boolean crit, boolean heal) {
         FhConfig c = FancyHealth.config();
-        if (!c.general.enabled || !c.numbers.enabled) return;
+        if (!c.general.enabled || !c.numbers.enabled || !me.bbijabnpobatejb.fancyhealth.api.FancyHealthApi.allowed(me.bbijabnpobatejb.fancyhealth.api.Restriction.NUMBERS)) return;
         if (!me.bbijabnpobatejb.fancyhealth.track.EntityFilter.acceptNumbers(e, c) && e != Minecraft.getInstance().player) return;
         DamageNumber n = create(WORLD, e.getId(), amount, maxHp, kind, crit, heal, c);
         if (n == null) return;

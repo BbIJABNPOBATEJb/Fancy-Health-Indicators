@@ -14,6 +14,11 @@ public class Colors {
         return (Math.max(0, Math.min(255, a)) << 24) | (rgb & 0xFFFFFF);
     }
 
+    public int mul(int a, int b) {
+        int r = (a >> 16 & 255) * (b >> 16 & 255) / 255, g = (a >> 8 & 255) * (b >> 8 & 255) / 255, bl = (a & 255) * (b & 255) / 255;
+        return (a & 0xFF000000) | r << 16 | g << 8 | bl;
+    }
+
     public int mix(int a, int b, float t) {
         t = Math.max(0f, Math.min(1f, t));
         int aa = a >>> 24, ar = (a >> 16) & 0xFF, ag = (a >> 8) & 0xFF, ab = a & 0xFF;

@@ -34,6 +34,10 @@ public class Projection {
         return zoom > 0.01f ? zoom : 1f;
     }
 
+    public float pixelsPerBlock(double dist, float screenHeight) {
+        return (float) (screenHeight / 2f * BASE_M11 * zoom() / Math.max(dist, 0.5));
+    }
+
     public float nearness(double dist, double reference, float min, float max) {
         return (float) Math.max(min, Math.min(max, zoom() * reference / Math.max(dist, 0.5)));
     }

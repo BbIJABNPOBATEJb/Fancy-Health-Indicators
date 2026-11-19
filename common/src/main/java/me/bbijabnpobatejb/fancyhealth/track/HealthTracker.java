@@ -225,7 +225,7 @@ public class HealthTracker {
         float linger = c.overhead.lingerSeconds * 20f;
         for (EntityState s : ACTIVE) {
             s.anim.update(dt);
-            float occTarget = s.visible ? 1f : c.general.occlusion == me.bbijabnpobatejb.fancyhealth.config.Occlusion.HIDE
+            float occTarget = s.visible ? 1f : c.general.occlusion == me.bbijabnpobatejb.fancyhealth.config.Occlusion.HIDE || !me.bbijabnpobatejb.fancyhealth.api.FancyHealthApi.allowed(me.bbijabnpobatejb.fancyhealth.api.Restriction.WALLS)
                     || !NameTags.seenThroughWalls(s.entity, 1f) ? 0f : 0.35f;
             if (s.occl < 0) s.occl = occTarget;
             float step = dt * 2f;

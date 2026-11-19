@@ -10,6 +10,7 @@
     "MinecraftMixin",
     "MultiPlayerGameModeMixin",
     "OptionsAccessor",
+    "ChatComponentMixin",
     "OptionsMixin",
     "ScreenRectangleMixin"
   ],

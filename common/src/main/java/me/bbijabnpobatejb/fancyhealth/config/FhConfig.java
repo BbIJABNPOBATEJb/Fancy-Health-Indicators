@@ -25,6 +25,7 @@ public class FhConfig {
         public boolean tabHealth = true;
         public boolean uiSounds = true;
         public float uiVolume = 0.6f;
+        public boolean updateCheck = true;
     }
 
     public static class Filters {
@@ -61,6 +62,7 @@ public class FhConfig {
         public FontChoice font = FontChoice.DEFAULT;
         public TextEffect textEffect = TextEffect.SHADOW;
         public int segments = 10;
+        public ManyHearts manyHearts = ManyHearts.ROWS;
         public float trailHold = 0.6f;
         public float trailSpeed = 1f;
         public int flashColor = 0xFFFFFFFF;

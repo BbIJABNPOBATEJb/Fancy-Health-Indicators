@@ -92,6 +92,13 @@ public record GuiCanvas(GuiGraphicsExtractor g) implements Canvas {
     }
 
     @Override
+    public void guiSprite(String id, int x, int y, int w, int h, int argb) {
+        boolean pushed = pixelSnap();
+        g.blitSprite(RenderPipelines.GUI_TEXTURED, Identifier.withDefaultNamespace(id), x, y, w, h, argb);
+        if (pushed) g.pose().popMatrix();
+    }
+
+    @Override
     public void entity(LivingEntity entity, int x1, int y1, int x2, int y2, int size, float yOffset, float mouseX, float mouseY) {
         Matrix3x2f m = g.pose();
         Vector2f a = m.transformPosition(x1, y1, new Vector2f());

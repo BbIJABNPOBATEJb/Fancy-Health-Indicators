@@ -356,7 +356,8 @@ public class Preview {
             plateAlpha += ((show ? 1 : 0) - plateAlpha) * Math.min(1f, dt * cfg.general.fadeSpeed);
             if (frozen) plateAlpha = show ? 1 : 0;
             float a = plateAlpha * (cfg.overhead.enabled ? 1f : 0.4f);
-            float scale = cfg.overhead.scale * (cfg.overhead.sizeMode == SizeMode.WORLD ? worldScale(c, size, 7f) : 1f);
+            float scale = cfg.overhead.scale * (cfg.overhead.sizeMode != SizeMode.WORLD ? 1f
+                    : cfg.overhead.look.style == me.bbijabnpobatejb.fancyhealth.config.BarStyle.NAMETAG ? size * 0.025f : worldScale(c, size, 7f));
             scale = Math.min(scale, (x1 - x0 - 16) / (Math.max(20, cfg.overhead.look.width) + 44f));
             float anchorY = switch (cfg.overhead.anchor) {
                 case ABOVE_NAME -> vanillaName ? headY - 0.56f * size : headY - 0.14f * size;

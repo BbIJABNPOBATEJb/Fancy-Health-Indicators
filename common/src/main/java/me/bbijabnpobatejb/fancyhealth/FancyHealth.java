@@ -48,6 +48,8 @@ public class FancyHealth {
         return keys;
     }
 
+    private Object lastLevel;
+
     public void tick(Minecraft mc) {
         if (keys != null) {
             while (openKey.consumeClick()) {
@@ -60,6 +62,13 @@ public class FancyHealth {
                 if (mc.player != null) {
                     platform.overlayMessage(Component.translatable(c.general.enabled ? "fancyhealth.toggle.on" : "fancyhealth.toggle.off"));
                 }
+            }
+        }
+        if (mc.level != lastLevel) {
+            lastLevel = mc.level;
+            me.bbijabnpobatejb.fancyhealth.api.FancyHealthApi.clear(me.bbijabnpobatejb.fancyhealth.api.FancyHealthApi.SERVER);
+            if (mc.level != null && mc.getCurrentServer() != null && mc.getCurrentServer().motd != null) {
+                me.bbijabnpobatejb.fancyhealth.api.FancyHealthApi.readCodes(mc.getCurrentServer().motd.getString());
             }
         }
         HealthTracker.tick(mc);

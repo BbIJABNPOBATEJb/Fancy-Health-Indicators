@@ -57,6 +57,30 @@ public class Presets {
             c.numbers.critMark = CritMark.NONE;
         });
 
+        PRESETS.put("game_hearts", c -> {
+            c.numbers.showHeal = true;
+            c.numbers.mergeMillis = 200;
+            FhConfig.BarLook l = c.overhead.look;
+            l.style = BarStyle.GAME_HEARTS;
+            l.showName = false;
+            l.valueText = ValueText.NONE;
+            c.overhead.anchor = Anchor.ABOVE_NAME;
+            c.overhead.sizeMode = SizeMode.WORLD;
+        });
+
+        PRESETS.put("scoreboard", c -> {
+            FhConfig.BarLook l = c.overhead.look;
+            l.style = BarStyle.NAMETAG;
+            l.showName = false;
+            l.valueText = ValueText.CURRENT;
+            l.colorMode = ColorMode.FIXED;
+            l.color = 0xFFFF5555;
+            l.background = 0x40000000;
+            l.textEffect = TextEffect.NONE;
+            c.overhead.anchor = Anchor.BELOW_NAME;
+            c.overhead.sizeMode = SizeMode.WORLD;
+        });
+
         PRESETS.put("holo", c -> {
             c.numbers.showHeal = true;
             c.numbers.mergeMillis = 200;

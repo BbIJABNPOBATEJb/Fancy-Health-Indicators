@@ -1,5 +1,6 @@
 package me.bbijabnpobatejb.fancyhealth.render;
 
+import me.bbijabnpobatejb.fancyhealth.FancyHealth;
 import me.bbijabnpobatejb.fancyhealth.track.BarAnim;
 import me.bbijabnpobatejb.fancyhealth.track.EntityFilter;
 import me.bbijabnpobatejb.fancyhealth.track.EntityState;
@@ -20,6 +21,8 @@ public class BarModel {
     public int team;
     public float time;
     public BarAnim anim;
+    public int heartType;
+    public boolean hardcore;
 
     public BarModel set(LivingEntity e, BarAnim anim) {
         health = e.getHealth();
@@ -34,6 +37,8 @@ public class BarModel {
         flash = anim.flash;
         this.anim = anim;
         time = (System.currentTimeMillis() % 100000L) / 1000f;
+        heartType = FancyHealth.platform().heartType(e);
+        hardcore = e.level().getLevelData().isHardcore();
         return this;
     }
 
