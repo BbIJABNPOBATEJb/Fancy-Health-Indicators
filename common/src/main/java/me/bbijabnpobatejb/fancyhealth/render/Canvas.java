@@ -38,6 +38,8 @@ public interface Canvas {
 
     void identity();
 
+    void front();
+
     void guiSprite(String id, int x, int y, int w, int h, int argb);
 
     default void scale(float s) {

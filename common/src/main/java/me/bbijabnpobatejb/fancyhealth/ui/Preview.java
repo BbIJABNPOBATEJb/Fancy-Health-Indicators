@@ -82,6 +82,7 @@ public class Preview {
         if (id.equals("player") || id.equals("self")) return mc.player;
         try {
             EntityType<?> type = Mc.entityType(id);
+            if (type == null) return id.equals("minecraft:mannequin") ? mc.player : null;
             Entity e = Mc.create(type, mc.level);
             if (e instanceof LivingEntity le) {
                 le.setId(-2000 - n);
@@ -471,9 +472,12 @@ public class Preview {
                 c.entity(e, (int) ccx - half, mid - half, (int) ccx + half, mid + half, size, 0f, ccx + 30, mid);
             }
             if (!on) {
+                c.push();
+                c.front();
                 Theme.rrect(c, cx0 + 2, cy0 + 2, cx0 + cw - 2, cy0 + ch - 2, 9, 0xB0101012);
                 Theme.circle(c, ccx, (head + feet) / 2f, 9, 0xE0FF453A);
                 Theme.icon(c, 9, ccx, (head + feet) / 2f, 10, 0xFFFFFFFF);
+                c.pop();
             } else {
                 fillModel(e);
                 model.health = model.max * (0.45f + 0.08f * i);

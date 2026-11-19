@@ -6,7 +6,7 @@
 
 <p align="center">
   Полосы здоровья и всплывающие цифры урона с настройками, где каждое изменение видно сразу.<br>
-  Клиентский мод для <b>Fabric</b>, <b>Minecraft 1.21.11, 26.2 и 26.3</b>. 18 языков.
+  Клиентский мод для <b>Fabric</b>, <b>Quilt</b>, <b>NeoForge</b> и <b>Forge</b>, <b>Minecraft 1.16.5 – 26.3</b>. 18 языков.
 </p>
 
 <p align="center">
@@ -117,16 +117,32 @@ FancyHealthApi.clear("mymod");
 
 ## Установка
 
-1. Поставь [Fabric Loader](https://fabricmc.net/use/installer/) и [Fabric API](https://modrinth.com/mod/fabric-api).
-2. Положи jar под свою версию в `mods`.
+Положи jar под свою версию и загрузчик в `mods`. На Fabric и Quilt нужен ещё
+[Fabric API](https://modrinth.com/mod/fabric-api) (на Quilt — QFAPI); [Mod Menu](https://modrinth.com/mod/modmenu) — по желанию.
+На NeoForge и Forge настройки открываются из списка модов.
 
-| Jar | Minecraft | Java |
-|---|---|---|
-| `fancyhealth-1.21.11-1.0.0.jar` | 1.21.11 | 21+ |
-| `fancyhealth-26.2-1.0.0.jar` | 26.2 | 25+ |
-| `fancyhealth-26.3-1.0.0.jar` | 26.3 | 25+ |
+| Minecraft | Fabric / Quilt | NeoForge | Forge |
+|---|:-:|:-:|:-:|
+| 26.3 | ✔ | ✔ | |
+| 26.2 | ✔ | | |
+| 26.1 – 26.1.2 | ✔ | | |
+| 1.21.11 | ✔ | ✔ | |
+| 1.21.9 – 1.21.10 | ✔ | | |
+| 1.21.6 – 1.21.8 | ✔ | | |
+| 1.21.5 | ✔ | | |
+| 1.21.4 | ✔ | | |
+| 1.21.2 – 1.21.3 | ✔ | | |
+| 1.21 – 1.21.1 | ✔ | ✔ | |
+| 1.20.5 – 1.20.6 | ✔ | | |
+| 1.20.3 – 1.20.4 | ✔ | | |
+| 1.20 – 1.20.1 | ✔ | | ✔ |
+| 1.19.4 | ✔ | | |
+| 1.19.1 – 1.19.2 | ✔ | | |
+| 1.18.2 | ✔ | | |
+| 1.17.1 | ✔ | | |
+| 1.16.5 | ✔ | | |
 
-[Mod Menu](https://modrinth.com/mod/modmenu) — по желанию.
+Java: 8+ для 1.16.5, 16+ для 1.17.1, 17+ до 1.20.4, 21+ для 1.20.5 – 1.21.11, 25+ для 26.x — та же, что нужна самой игре.
 
 Конфиг лежит в `config/fancyhealth.json`.
 
@@ -136,15 +152,18 @@ en, ru, uk, de, fr, es, pt, it, pl, tr, nl, cs, sv, zh, ja, ko, vi, id. Мод �
 
 ## Сборка
 
-JDK 25. Общий код в `common/`, код под версию — в `versions/<версия>/`.
+JDK 25. Весь код лежит в `common/`; строки, которые отличаются между версиями и загрузчиками, помечены комментариями
+`//? if` и переключаются небольшим препроцессором из `common/preprocess.gradle`. Каждая цель в `versions/` — отдельная
+сборка Gradle:
 
 ```bash
 cd versions/1.21.11 && ./gradlew build
-cd versions/26.2 && ./gradlew build
-cd versions/26.3 && ./gradlew build
+cd versions/neoforge-1.21.1 && ./gradlew build
+cd versions/forge-1.20.1 && ./gradlew build
 ```
 
-Jar-файлы появятся в `versions/<версия>/build/libs`.
+Jar-файлы появятся в `versions/<цель>/build/libs`. `./gradlew activate` в любой цели переключает исходники в `common/` на
+эту версию, чтобы IDE видела нужные ветки.
 
 ## Лицензия
 

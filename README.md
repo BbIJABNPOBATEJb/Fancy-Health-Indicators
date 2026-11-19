@@ -6,7 +6,7 @@
 
 <p align="center">
   Health bars and floating damage numbers with a settings screen where every change shows up at once.<br>
-  A client-side <b>Fabric</b> mod for <b>Minecraft 1.21.11, 26.2 and 26.3</b>. 18 languages.
+  A client-side mod for <b>Fabric</b>, <b>Quilt</b>, <b>NeoForge</b> and <b>Forge</b>, <b>Minecraft 1.16.5 – 26.3</b>. 18 languages.
 </p>
 
 <p align="center">
@@ -119,16 +119,32 @@ turned off in General.
 
 ## Install
 
-1. Install [Fabric Loader](https://fabricmc.net/use/installer/) and [Fabric API](https://modrinth.com/mod/fabric-api).
-2. Put the jar for your Minecraft version into `mods`.
+Put the jar for your Minecraft version and loader into `mods`. On Fabric and Quilt you also need
+[Fabric API](https://modrinth.com/mod/fabric-api) (QFAPI on Quilt); [Mod Menu](https://modrinth.com/mod/modmenu) is optional.
+On NeoForge and Forge the settings open from the mod list.
 
-| Jar | Minecraft | Java |
-|---|---|---|
-| `fancyhealth-1.21.11-1.0.0.jar` | 1.21.11 | 21+ |
-| `fancyhealth-26.2-1.0.0.jar` | 26.2 | 25+ |
-| `fancyhealth-26.3-1.0.0.jar` | 26.3 | 25+ |
+| Minecraft | Fabric / Quilt | NeoForge | Forge |
+|---|:-:|:-:|:-:|
+| 26.3 | ✔ | ✔ | |
+| 26.2 | ✔ | | |
+| 26.1 – 26.1.2 | ✔ | | |
+| 1.21.11 | ✔ | ✔ | |
+| 1.21.9 – 1.21.10 | ✔ | | |
+| 1.21.6 – 1.21.8 | ✔ | | |
+| 1.21.5 | ✔ | | |
+| 1.21.4 | ✔ | | |
+| 1.21.2 – 1.21.3 | ✔ | | |
+| 1.21 – 1.21.1 | ✔ | ✔ | |
+| 1.20.5 – 1.20.6 | ✔ | | |
+| 1.20.3 – 1.20.4 | ✔ | | |
+| 1.20 – 1.20.1 | ✔ | | ✔ |
+| 1.19.4 | ✔ | | |
+| 1.19.1 – 1.19.2 | ✔ | | |
+| 1.18.2 | ✔ | | |
+| 1.17.1 | ✔ | | |
+| 1.16.5 | ✔ | | |
 
-[Mod Menu](https://modrinth.com/mod/modmenu) is optional.
+Java: 8+ for 1.16.5, 16+ for 1.17.1, 17+ up to 1.20.4, 21+ for 1.20.5 – 1.21.11, 25+ for 26.x — the same Java the game itself needs.
 
 The config is `config/fancyhealth.json`.
 
@@ -138,15 +154,17 @@ en, ru, uk, de, fr, es, pt, it, pl, tr, nl, cs, sv, zh, ja, ko, vi, id. The mod 
 
 ## Build
 
-JDK 25. Shared code is in `common/`, version-specific code in `versions/<version>/`.
+JDK 25. All code lives in `common/`; lines that differ between versions and loaders are marked with `//? if` comments and
+switched by a small preprocessor in `common/preprocess.gradle`. Every target in `versions/` is a separate Gradle build:
 
 ```bash
 cd versions/1.21.11 && ./gradlew build
-cd versions/26.2 && ./gradlew build
-cd versions/26.3 && ./gradlew build
+cd versions/neoforge-1.21.1 && ./gradlew build
+cd versions/forge-1.20.1 && ./gradlew build
 ```
 
-Jars end up in `versions/<version>/build/libs`.
+Jars end up in `versions/<target>/build/libs`. `./gradlew activate` in any target switches the sources in `common/` to that
+version, so the IDE sees the right branches.
 
 ## License
 

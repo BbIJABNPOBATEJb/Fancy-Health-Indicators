@@ -1,3 +1,4 @@
+//? if fabric
 package me.bbijabnpobatejb.fancyhealth.compat;
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;

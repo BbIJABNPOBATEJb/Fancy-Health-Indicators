@@ -32,6 +32,11 @@ public record GuiCanvas(GuiGraphics g) implements Canvas {
     }
 
     @Override
+    public void front() {
+        g.nextStratum();
+    }
+
+    @Override
     public void push() {
         g.pose().pushMatrix();
     }

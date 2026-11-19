@@ -1,3 +1,4 @@
+//? if fabric
 package com.terraformersmc.modmenu.api;
 
 import net.minecraft.client.gui.screens.Screen;

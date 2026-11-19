@@ -74,11 +74,12 @@ public class Mc {
 
     public EntityType<?> entityType(String id) {
         //? if >=1.21.2 {
+        if (!BuiltInRegistries.ENTITY_TYPE.containsKey(id(id))) return null;
         return BuiltInRegistries.ENTITY_TYPE.getValue(id(id));
         //?} else if >=1.19.3 {
-        /*return BuiltInRegistries.ENTITY_TYPE.get(id(id));
+        /*return BuiltInRegistries.ENTITY_TYPE.containsKey(id(id)) ? BuiltInRegistries.ENTITY_TYPE.get(id(id)) : null;
         *///?} else {
-        /*return Registry.ENTITY_TYPE.get(id(id));
+        /*return Registry.ENTITY_TYPE.containsKey(id(id)) ? Registry.ENTITY_TYPE.get(id(id)) : null;
         *///?}
     }
 

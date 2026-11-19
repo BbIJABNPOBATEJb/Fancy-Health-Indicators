@@ -3,7 +3,7 @@ package me.bbijabnpobatejb.fancyhealth.config;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import lombok.experimental.UtilityClass;
-import net.fabricmc.loader.api.FabricLoader;
+import me.bbijabnpobatejb.fancyhealth.FancyHealth;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -25,7 +25,7 @@ public class ConfigStore {
     }
 
     public Path path() {
-        return FabricLoader.getInstance().getConfigDir().resolve("fancyhealth.json");
+        return FancyHealth.platform().configDir().resolve("fancyhealth.json");
     }
 
     public void load() {

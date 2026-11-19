@@ -1,3 +1,4 @@
+//? if fabric
 package com.terraformersmc.modmenu.api;
 
 public interface ModMenuApi {

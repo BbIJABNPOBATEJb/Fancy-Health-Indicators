@@ -23,6 +23,8 @@ def preprocess = tasks.register('preprocessSources') {
     if (new File(stand, 'java').exists()) inputs.dir(new File(stand, 'java'))
     inputs.property('minecraft', mcVersion)
     inputs.property('loader', loaderName)
+    inputs.property('scheme', 3)
+    inputs.dir(new File(common, 'src/main/resources/assets/fancyhealth/font'))
     outputs.dir(generated)
     doLast {
         preprocessTree(new File(common, 'src/main/java'), new File(generated, 'main'), mcVersion, loaderName)
@@ -33,9 +35,32 @@ def preprocess = tasks.register('preprocessSources') {
             def list = []
             if (dir.exists()) dir.eachFile { if (it.name.endsWith('.java')) list << (it.name - '.java') }
             res.mkdirs()
-            new File(res, name).setText(groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson([
-                    required: true, minVersion: '0.8', package: pkg, compatibilityLevel: javaLevel,
-                    client: list.sort(), injectors: [defaultRequire: 1]])), 'UTF-8')
+            def config = [required: true, minVersion: '0.8', package: pkg, compatibilityLevel: javaLevel]
+            if (loaderName == 'forge') config.refmap = name.replace('.mixins.', '.refmap.')
+            config.client = list.sort()
+            config.injectors = [defaultRequire: 1]
+            new File(res, name).setText(groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson(config)), 'UTF-8')
+        }
+        if (Preprocessor.compare(mcVersion, '1.20') < 0) {
+            def fonts = new File(common, 'src/main/resources/assets/fancyhealth/font')
+            def legacy = [type: 'legacy_unicode', sizes: 'minecraft:font/glyph_sizes.bin', template: 'minecraft:font/unicode_page_%s.png']
+            fonts.eachFileRecurse(groovy.io.FileType.FILES) { File f ->
+                if (!f.name.endsWith('.json')) return
+                def json = new groovy.json.JsonSlurper().parse(f)
+                def providers = json.providers.findAll { it.type != 'reference' }
+                providers.each { it.remove('filter') }
+                providers << legacy
+                def target = new File(generated, 'resources/assets/fancyhealth/font/' + fonts.toPath().relativize(f.toPath()).toString().replace(File.separator, '/'))
+                target.parentFile.mkdirs()
+                target.setText(groovy.json.JsonOutput.toJson([providers: providers]), 'UTF-8')
+            }
+        }
+        if (project.findProperty('pack_format')) {
+            ['resources', 'devResources'].each {
+                def pack = new File(generated, it + '/pack.mcmeta')
+                pack.parentFile.mkdirs()
+                pack.setText(groovy.json.JsonOutput.toJson([pack: [description: 'Fancy Health Indicators', pack_format: project.pack_format as int]]), 'UTF-8')
+            }
         }
         writeMixins(new File(generated, 'main/me/bbijabnpobatejb/fancyhealth/mixin'), 'me.bbijabnpobatejb.fancyhealth.mixin',
                 new File(generated, 'resources'), 'fancyhealth.mixins.json')
@@ -47,7 +72,7 @@ def preprocess = tasks.register('preprocessSources') {
 sourceSets {
     main {
         java.srcDirs = [new File(generated, 'main')]
-        resources.srcDirs = [new File(common, 'src/main/resources'), new File(common, "src/meta/${loaderName}"), new File(generated, 'resources')]
+        resources.srcDirs = [new File(generated, 'resources'), new File(common, 'src/main/resources'), new File(common, "src/meta/${loaderName}")]
     }
     dev {
         java.srcDirs = [new File(generated, 'dev')]
@@ -57,9 +82,12 @@ sourceSets {
     }
 }
 
+sourceSets.main.output.resourcesDir = sourceSets.main.java.destinationDirectory
+sourceSets.dev.output.resourcesDir = sourceSets.dev.java.destinationDirectory
+
 tasks.named('compileJava') { dependsOn preprocess }
 tasks.named('processResources') { dependsOn preprocess }
-tasks.matching { it.name in ['compileDevJava', 'processDevResources', 'sourcesJar'] }.configureEach { dependsOn preprocess }
+tasks.matching { it.name in ['compileDevJava', 'processDevResources', 'sourcesJar', 'createMinecraftArtifacts'] }.configureEach { dependsOn preprocess }
 
 tasks.register('activate') {
     doLast {
@@ -92,7 +120,9 @@ if (loaderName == 'fabric') {
 }
 
 processResources {
-    def props = [version: project.version, range: project.minecraft_range, java: project.findProperty('java_target') ?: project.java_release]
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    def props = [version: project.version, range: project.minecraft_range, java: project.findProperty('java_target') ?: project.java_release,
+                 forgeRange: project.minecraft_range, logoKey: project.findProperty('logo_key') ?: 'logoFile']
     inputs.properties props
     filesMatching(['fabric.mod.json', 'META-INF/mods.toml', 'META-INF/neoforge.mods.toml']) {
         expand props
@@ -113,7 +143,7 @@ jar {
     from(rootProject.file('../../LICENSE'))
 }
 
-tasks.register('writeClientArgs') {
+if (loaderName == 'fabric') tasks.register('writeClientArgs') {
     dependsOn 'classes', 'devClasses', 'configureClientLaunch'
     def runClient = tasks.named('runClient')
     def target = layout.buildDirectory.file('launch/client.args')

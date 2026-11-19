@@ -7,6 +7,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
 
+import java.nio.file.Path;
 import java.util.List;
 
 public interface Platform {
@@ -34,6 +35,8 @@ public interface Platform {
     String minecraftVersion();
 
     String loader();
+
+    Path configDir();
 
     int heartType(net.minecraft.world.entity.LivingEntity entity);
 }

@@ -1,4 +1,4 @@
-//? if <26.1
+//? if <26.1 && !forge
 package me.bbijabnpobatejb.fancyhealth.mixin;
 
 import me.bbijabnpobatejb.fancyhealth.hud.HudRenderer;

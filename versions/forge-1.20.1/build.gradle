@@ -1,0 +1,42 @@
+plugins {
+    id 'net.neoforged.moddev.legacyforge' version '2.0.148'
+}
+
+apply from: '../../common/shared.gradle'
+
+legacyForge {
+    version = project.forge_version
+    runs {
+        client {
+            client()
+            gameDirectory = rootProject.file("../../stand/${findProperty('play') ? 'play' : 'client'}-forge-1.20.1")
+            programArguments.addAll('--username', 'FancyLab', '--width', '1280', '--height', '720')
+            if (findProperty('join')) programArguments.addAll('--quickPlayMultiplayer', findProperty('join').toString())
+            if (!findProperty('play')) jvmArguments.addAll('-Dfancyhealth.stand=1', "-Dfancyhealth.bridge=${findProperty('bridge') ?: 25654}".toString())
+        }
+    }
+    mods {
+        fancyhealth {
+            sourceSet sourceSets.main
+        }
+        fancyhealthdev {
+            sourceSet sourceSets.dev
+        }
+    }
+}
+
+mixin {
+    add sourceSets.main, 'fancyhealth.refmap.json'
+    add sourceSets.dev, 'fancyhealthdev.refmap.json'
+    config 'fancyhealth.mixins.json'
+    config 'fancyhealthdev.mixins.json'
+}
+
+dependencies {
+    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+    devAnnotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
+}
+
+jar {
+    manifest.attributes('MixinConfigs': 'fancyhealth.mixins.json')
+}

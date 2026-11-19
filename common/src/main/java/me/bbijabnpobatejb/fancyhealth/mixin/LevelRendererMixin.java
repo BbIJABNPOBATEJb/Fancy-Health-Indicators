@@ -26,7 +26,7 @@ import org.joml.Vector4f;
 //? if <1.21.6 {
 /*import net.minecraft.client.renderer.GameRenderer;
 *///?}
-//? if <1.21.2 {
+//? if <1.21.4 {
 /*import net.minecraft.client.renderer.LightTexture;
 *///?}
 //? if <1.20.5 {
@@ -49,10 +49,16 @@ public abstract class LevelRendererMixin {
                                       Matrix4f view, Matrix4f projection, GpuBufferSlice fog, Vector4f fogColor, boolean sky, CallbackInfo ci) {
         Projection.update(projection.get(new float[16]), view.get(new float[16]), camera.getPosition());
     }
-    *///?} else if >=1.21.2 {
+    *///?} else if >=1.21.4 {
     /*@Inject(method = "renderLevel", at = @At("HEAD"))
     private void fancyhealth$matrices(GraphicsResourceAllocator allocator, DeltaTracker delta, boolean outline, Camera camera,
                                       GameRenderer renderer, Matrix4f view, Matrix4f projection, CallbackInfo ci) {
+        Projection.update(projection.get(new float[16]), view.get(new float[16]), camera.getPosition());
+    }
+    *///?} else if >=1.21.2 {
+    /*@Inject(method = "renderLevel", at = @At("HEAD"))
+    private void fancyhealth$matrices(GraphicsResourceAllocator allocator, DeltaTracker delta, boolean outline, Camera camera,
+                                      GameRenderer renderer, LightTexture light, Matrix4f view, Matrix4f projection, CallbackInfo ci) {
         Projection.update(projection.get(new float[16]), view.get(new float[16]), camera.getPosition());
     }
     *///?} else if >=1.21 {

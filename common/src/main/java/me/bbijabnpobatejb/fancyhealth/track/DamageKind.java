@@ -50,6 +50,24 @@ public enum DamageKind {
     }
     *///?}
 
+    public static DamageKind ofEvent(byte id) {
+        switch (id) {
+            case 2:
+                return PHYSICAL;
+            case 33:
+            case 44:
+                return THORNS;
+            case 36:
+                return DROWN;
+            case 37:
+                return FIRE;
+            case 57:
+                return FREEZE;
+            default:
+                return null;
+        }
+    }
+
     private static DamageKind byId(String id) {
         if (id == null) return PHYSICAL;
         switch (id) {

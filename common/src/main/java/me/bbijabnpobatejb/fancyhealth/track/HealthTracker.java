@@ -161,6 +161,13 @@ public class HealthTracker {
         }
     }
 
+    public void onDamageKind(LivingEntity e, DamageKind kind) {
+        EntityState s = STATES.get(e.getId());
+        if (s == null) return;
+        s.kind = kind;
+        s.kindTick = tick;
+    }
+
     public void onCrit(Entity e) {
         EntityState s = STATES.get(e.getId());
         if (s != null) s.critTick = tick;

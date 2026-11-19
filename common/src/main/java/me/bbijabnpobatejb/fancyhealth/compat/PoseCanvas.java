@@ -22,6 +22,11 @@ public record PoseCanvas(GuiGraphics g) implements Canvas {
     }
 
     @Override
+    public void front() {
+        g.pose().translate(0, 0, 400);
+    }
+
+    @Override
     public void push() {
         g.pose().pushPose();
     }

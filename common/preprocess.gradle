@@ -27,7 +27,8 @@ class Preprocessor {
         def peek = { pos[0] < tokens.size() ? tokens[pos[0]] : null }
         def next = { tokens[pos[0]++] }
         def or
-        def atom = {
+        def atom
+        atom = {
             def t = next()
             if (t == '(') {
                 def v = or()

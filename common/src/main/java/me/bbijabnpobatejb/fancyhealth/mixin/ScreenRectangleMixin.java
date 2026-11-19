@@ -3,7 +3,11 @@ package me.bbijabnpobatejb.fancyhealth.mixin;
 
 import net.minecraft.client.gui.navigation.ScreenRectangle;
 import net.minecraft.util.Mth;
+//? if >=1.21.11 {
 import org.joml.Matrix3x2fc;
+//?} else {
+/*import org.joml.Matrix3x2f;
+*///?}
 import org.joml.Vector2f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -14,7 +18,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class ScreenRectangleMixin {
 
     @Inject(method = "transformMaxBounds", at = @At("HEAD"), cancellable = true)
+    //? if >=1.21.11 {
     private void fancyhealth$fullBounds(Matrix3x2fc m, CallbackInfoReturnable<ScreenRectangle> cir) {
+    //?} else {
+    /*private void fancyhealth$fullBounds(Matrix3x2f m, CallbackInfoReturnable<ScreenRectangle> cir) {
+    *///?}
         ScreenRectangle self = (ScreenRectangle) (Object) this;
         Vector2f a = m.transformPosition(self.left(), self.top(), new Vector2f());
         Vector2f b = m.transformPosition(self.right(), self.top(), new Vector2f());

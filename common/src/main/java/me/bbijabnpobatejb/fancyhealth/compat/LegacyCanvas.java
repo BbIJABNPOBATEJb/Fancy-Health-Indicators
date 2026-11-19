@@ -47,6 +47,11 @@ public record LegacyCanvas(PoseStack pose) implements Canvas {
     }
 
     @Override
+    public void front() {
+        pose.translate(0, 0, 400);
+    }
+
+    @Override
     public void push() {
         pose.pushPose();
     }
