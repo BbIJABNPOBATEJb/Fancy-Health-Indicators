@@ -1,5 +1,6 @@
 package me.bbijabnpobatejb.fancyhealth.ui;
 
+import me.bbijabnpobatejb.fancyhealth.compat.Mc;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import me.bbijabnpobatejb.fancyhealth.config.ConfigStore;
@@ -235,7 +236,7 @@ public final class Rows {
 
         @Override
         public void render(Canvas c, Host host, Ctx ctx) {
-            String t = Component.translatable(key).getString().toUpperCase(Locale.ROOT);
+            String t = Mc.translatable(key).getString().toUpperCase(Locale.ROOT);
             Theme.small(c, Theme.ui(t), x + 12, y + 12, Theme.TEXT2);
         }
 
@@ -429,11 +430,11 @@ public final class Rows {
         @Override
         public boolean keyPressed(Host host, int key) {
             if (!editing) return false;
-            if (key == com.mojang.blaze3d.platform.InputConstants.KEY_RETURN || key == com.mojang.blaze3d.platform.InputConstants.KEY_NUMPADENTER) {
+            if (key == me.bbijabnpobatejb.fancyhealth.compat.Keys.RETURN || key == me.bbijabnpobatejb.fancyhealth.compat.Keys.NUMPAD_ENTER) {
                 stopEditing(host, true);
-            } else if (key == com.mojang.blaze3d.platform.InputConstants.KEY_ESCAPE) {
+            } else if (key == me.bbijabnpobatejb.fancyhealth.compat.Keys.ESCAPE) {
                 stopEditing(host, false);
-            } else if (key == com.mojang.blaze3d.platform.InputConstants.KEY_BACKSPACE && !buffer.isEmpty()) {
+            } else if (key == me.bbijabnpobatejb.fancyhealth.compat.Keys.BACKSPACE && !buffer.isEmpty()) {
                 buffer = fresh ? "" : buffer.substring(0, buffer.length() - 1);
                 fresh = false;
             }
@@ -605,11 +606,11 @@ public final class Rows {
         @Override
         public boolean keyPressed(Host host, int key) {
             if (!editing) return false;
-            if (key == com.mojang.blaze3d.platform.InputConstants.KEY_RETURN || key == com.mojang.blaze3d.platform.InputConstants.KEY_NUMPADENTER) {
+            if (key == me.bbijabnpobatejb.fancyhealth.compat.Keys.RETURN || key == me.bbijabnpobatejb.fancyhealth.compat.Keys.NUMPAD_ENTER) {
                 stopEditing(host, true);
-            } else if (key == com.mojang.blaze3d.platform.InputConstants.KEY_ESCAPE) {
+            } else if (key == me.bbijabnpobatejb.fancyhealth.compat.Keys.ESCAPE) {
                 stopEditing(host, false);
-            } else if (key == com.mojang.blaze3d.platform.InputConstants.KEY_BACKSPACE && !buffer.isEmpty()) {
+            } else if (key == me.bbijabnpobatejb.fancyhealth.compat.Keys.BACKSPACE && !buffer.isEmpty()) {
                 buffer = fresh ? "" : buffer.substring(0, buffer.length() - 1);
                 fresh = false;
             }

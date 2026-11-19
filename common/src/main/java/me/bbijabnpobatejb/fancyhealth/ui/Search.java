@@ -1,5 +1,6 @@
 package me.bbijabnpobatejb.fancyhealth.ui;
 
+import me.bbijabnpobatejb.fancyhealth.compat.Mc;
 import me.bbijabnpobatejb.fancyhealth.config.FhConfig;
 import me.bbijabnpobatejb.fancyhealth.config.Labeled;
 import me.bbijabnpobatejb.fancyhealth.render.Colors;
@@ -74,7 +75,7 @@ public final class Search {
     }
 
     private static String tr(String key) {
-        return Language.getInstance().has(key) ? Component.translatable(key).getString() : "";
+        return Language.getInstance().has(key) ? Mc.translatable(key).getString() : "";
     }
 
     private static String opt(String key) {
@@ -157,7 +158,7 @@ public final class Search {
 
     private static Fields fields(Rows.Row r, String tabText, String sectionText, FhConfig cur, FhConfig def) {
         String o = opt(r.key);
-        String label = norm(Component.translatable(r.key).getString());
+        String label = norm(Mc.translatable(r.key).getString());
         String tags = norm(tr("fancyhealth.tags.option." + o) + " " + o.replace('_', ' '));
         String desc = r.descKey() != null ? norm(tr(r.descKey())) : "";
         String value = "", values = "", color = "";
@@ -224,13 +225,13 @@ public final class Search {
         }
         int order = 0;
         for (ConfigUi.Tab tab : ConfigUi.Tab.values()) {
-            String tabText = Component.translatable(tab.key()).getString() + " " + tr("fancyhealth.tags.tab." + tab.name().toLowerCase(Locale.ROOT));
+            String tabText = Mc.translatable(tab.key()).getString() + " " + tr("fancyhealth.tags.tab." + tab.name().toLowerCase(Locale.ROOT));
             String section = "", sectionText = "";
             for (Rows.Row r : tabs.get(tab)) {
                 order++;
                 if (r instanceof Rows.Header) {
                     section = r.key;
-                    sectionText = Component.translatable(r.key).getString() + " " + tr(r.key.replace("fancyhealth.option.section.", "fancyhealth.tags.section."));
+                    sectionText = Mc.translatable(r.key).getString() + " " + tr(r.key.replace("fancyhealth.option.section.", "fancyhealth.tags.section."));
                     continue;
                 }
                 if (r.descKey() == null && !(r instanceof PresetRow)) continue;

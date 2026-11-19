@@ -1,8 +1,10 @@
 package me.bbijabnpobatejb.fancyhealth.track;
 
-import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageSource;
+//? if >=1.19.4 {
+import net.minecraft.tags.DamageTypeTags;
 import net.minecraft.world.damagesource.DamageTypes;
+//?}
 
 public enum DamageKind {
     PHYSICAL(0xFFFF4B3E),
@@ -24,6 +26,7 @@ public enum DamageKind {
         this.color = color;
     }
 
+    //? if >=1.19.4 {
     public static DamageKind of(DamageSource s) {
         if (s.is(DamageTypeTags.IS_FIRE)) return FIRE;
         if (s.is(DamageTypeTags.IS_EXPLOSION)) return EXPLOSION;
@@ -33,9 +36,49 @@ public enum DamageKind {
         if (s.is(DamageTypeTags.IS_LIGHTNING)) return LIGHTNING;
         if (s.is(DamageTypes.WITHER) || s.is(DamageTypes.WITHER_SKULL)) return WITHER;
         if (s.is(DamageTypes.THORNS) || s.is(DamageTypes.CACTUS) || s.is(DamageTypes.SWEET_BERRY_BUSH)) return THORNS;
-        if (s.is(DamageTypes.FELL_OUT_OF_WORLD) || s.is(DamageTypes.OUTSIDE_BORDER)) return VOID;
         if (s.is(DamageTypes.MAGIC) || s.is(DamageTypes.INDIRECT_MAGIC) || s.is(DamageTypes.SONIC_BOOM) || s.is(DamageTypes.DRAGON_BREATH)) return MAGIC;
         if (s.is(DamageTypeTags.IS_PROJECTILE)) return PROJECTILE;
-        return PHYSICAL;
+        return byId(s.getMsgId());
+    }
+    //?} else {
+    /*public static DamageKind of(DamageSource s) {
+        if (s.isFire()) return FIRE;
+        if (s.isExplosion()) return EXPLOSION;
+        if (s.isMagic()) return MAGIC;
+        if (s.isProjectile()) return PROJECTILE;
+        return byId(s.getMsgId());
+    }
+    *///?}
+
+    private static DamageKind byId(String id) {
+        if (id == null) return PHYSICAL;
+        switch (id) {
+            case "fall":
+            case "flyIntoWall":
+                return FALL;
+            case "freeze":
+                return FREEZE;
+            case "drown":
+                return DROWN;
+            case "lightningBolt":
+                return LIGHTNING;
+            case "wither":
+            case "witherSkull":
+                return WITHER;
+            case "thorns":
+            case "cactus":
+            case "sweetBerryBush":
+                return THORNS;
+            case "outOfWorld":
+            case "outsideBorder":
+                return VOID;
+            case "magic":
+            case "indirectMagic":
+            case "dragonBreath":
+            case "sonic_boom":
+                return MAGIC;
+            default:
+                return PHYSICAL;
+        }
     }
 }

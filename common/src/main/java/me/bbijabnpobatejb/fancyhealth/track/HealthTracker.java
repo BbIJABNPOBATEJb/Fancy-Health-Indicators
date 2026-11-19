@@ -97,7 +97,7 @@ public class HealthTracker {
         }
         if (tick % 40 == 0) STATES.values().removeIf(s -> tick - s.seenTick > 40);
         updateLook(mc, c);
-        if (hit != null && (hit.isRemoved() || tick - hitTick > 20 * 60)) hit = null;
+        if (hit != null && (me.bbijabnpobatejb.fancyhealth.compat.Mc.removed(hit) || tick - hitTick > 20 * 60)) hit = null;
     }
 
     private void update(Minecraft mc, FhConfig c, LivingEntity e, EntityState s) {
@@ -175,7 +175,7 @@ public class HealthTracker {
     }
 
     private boolean canSee(Minecraft mc, Vec3 cam, LivingEntity e) {
-        Vec3 eye = e.getEyePosition();
+        Vec3 eye = me.bbijabnpobatejb.fancyhealth.compat.Mc.eye(e);
         if (clear(mc, cam, eye)) return true;
         return clear(mc, cam, new Vec3(e.getX(), e.getY() + e.getBbHeight() + 0.3, e.getZ()));
     }
@@ -187,7 +187,7 @@ public class HealthTracker {
     private void updateLook(Minecraft mc, FhConfig c) {
         double range = Math.max(c.crosshair.range, c.target.range);
         Entity camEntity = mc.getCameraEntity() != null ? mc.getCameraEntity() : mc.player;
-        Vec3 eye = camEntity.getEyePosition();
+        Vec3 eye = me.bbijabnpobatejb.fancyhealth.compat.Mc.eye(camEntity);
         Vec3 dir = camEntity.getViewVector(1f);
         Vec3 end = eye.add(dir.scale(range));
         LivingEntity best = null;
@@ -215,7 +215,7 @@ public class HealthTracker {
             lookTick = tick;
             EntityState s = STATES.get(best.getId());
             if (s != null) s.lookTick = tick;
-        } else if (look != null && (look.isRemoved() || tick - lookTick > 200)) {
+        } else if (look != null && (me.bbijabnpobatejb.fancyhealth.compat.Mc.removed(look) || tick - lookTick > 200)) {
             look = null;
         }
     }
@@ -240,7 +240,7 @@ public class HealthTracker {
             if (c.overhead.showWhen == ShowWhen.DAMAGED && s.health >= s.max - 0.01f && s.anim.trail <= s.anim.shown + 0.01f && tick - s.changeTick >= 40) {
                 show = false;
             }
-            if (e.isRemoved() || e.deathTime > 0) show = false;
+            if (me.bbijabnpobatejb.fancyhealth.compat.Mc.removed(e) || e.deathTime > 0) show = false;
             float target = show ? 1f : 0f;
             float speed = c.general.fadeSpeed * dt;
             if (e.deathTime > 0) speed *= 0.6f;

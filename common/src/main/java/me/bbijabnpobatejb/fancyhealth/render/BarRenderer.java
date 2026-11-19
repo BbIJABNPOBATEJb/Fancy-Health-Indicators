@@ -1,5 +1,6 @@
 package me.bbijabnpobatejb.fancyhealth.render;
 
+import me.bbijabnpobatejb.fancyhealth.compat.Mc;
 import lombok.experimental.UtilityClass;
 import me.bbijabnpobatejb.fancyhealth.FancyHealth;
 import me.bbijabnpobatejb.fancyhealth.config.BarStyle;
@@ -7,14 +8,13 @@ import me.bbijabnpobatejb.fancyhealth.config.FhConfig;
 import me.bbijabnpobatejb.fancyhealth.config.ManyHearts;
 import me.bbijabnpobatejb.fancyhealth.config.ValueText;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 
 import java.util.Locale;
 
 @UtilityClass
 public class BarRenderer {
 
-    public final Identifier ICONS = FancyHealth.id("textures/gui/icons.png");
+    public final String ICONS = FancyHealth.id("textures/gui/icons.png");
     public final int ICONS_W = 64;
     public final int ICONS_H = 32;
     private final int GOLD = 0xFFFFD84A;
@@ -397,7 +397,7 @@ public class BarRenderer {
         ValueText v = l.valueText == ValueText.NONE ? ValueText.CURRENT : l.valueText;
         String text = v == ValueText.CURRENT ? String.valueOf((int) Math.ceil(m.health - 0.001f)) : value(v, m, l.showAbsorption);
         Component score = TextFx.styled(text + " ", l.font);
-        Component mark = Component.literal("❤");
+        Component mark = Mc.literal("❤");
         int sw = TextFx.width(score), w = sw + TextFx.width(mark);
         int x = -w / 2;
         c.fill(x - 1, -10, x + w + 1, -1, Colors.alpha(l.background, a));

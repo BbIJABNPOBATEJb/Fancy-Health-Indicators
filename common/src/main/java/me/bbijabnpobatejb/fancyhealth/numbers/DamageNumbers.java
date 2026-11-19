@@ -1,5 +1,6 @@
 package me.bbijabnpobatejb.fancyhealth.numbers;
 
+import me.bbijabnpobatejb.fancyhealth.compat.Mc;
 import lombok.experimental.UtilityClass;
 import me.bbijabnpobatejb.fancyhealth.FancyHealth;
 import me.bbijabnpobatejb.fancyhealth.config.Animation;
@@ -20,7 +21,6 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,7 +32,7 @@ public class DamageNumbers {
     private final List<DamageNumber> WORLD = new ArrayList<>();
     private final Random RANDOM = new Random();
     private final Animator.Frame FRAME = new Animator.Frame();
-    private final Vector3f POS = new Vector3f();
+    private final float[] POS = new float[3];
 
     public void clear() {
         WORLD.clear();
@@ -126,7 +126,7 @@ public class DamageNumbers {
             double dist = Math.sqrt(cam.distanceToSqr(x, y, z));
             float near = Projection.nearness(dist, 6.0, 0.35f, 3.2f);
             float factor = 1f + (near - 1f) * c.numbers.distanceScaling;
-            draw(canvas, n, POS.x, POS.y, factor, occl, c);
+            draw(canvas, n, POS[0], POS[1], factor, occl, c);
         }
     }
 
@@ -165,7 +165,7 @@ public class DamageNumbers {
             canvas.push();
             canvas.translate(0, -7);
             canvas.scale(0.55f);
-            Component label = TextFx.styled(Component.translatable("fancyhealth.crit").getString(), c.numbers.font);
+            Component label = TextFx.styled(Mc.translatable("fancyhealth.crit").getString(), c.numbers.font);
             TextFx.draw(canvas, label, -TextFx.width(label) / 2, -4, color, c.numbers.effect, c.numbers.outlineColor);
             canvas.pop();
         }

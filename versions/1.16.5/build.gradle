@@ -1,0 +1,27 @@
+plugins {
+    id 'fabric-loom' version '1.18.2'
+    id 'xyz.wagyourtail.jvmdowngrader' version '1.3.6'
+}
+
+apply from: '../../common/shared.gradle'
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings loom.officialMojangMappings()
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    modLocalRuntime "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+}
+
+jvmdg.downgradeTo = JavaVersion.VERSION_1_8
+
+tasks.named('downgradeJar') {
+    inputFile = tasks.named('remapJar').flatMap { it.archiveFile }
+    archiveClassifier = 'downgraded'
+}
+
+tasks.named('shadeDowngradedApi') {
+    inputFile = tasks.named('downgradeJar').flatMap { it.archiveFile }
+    archiveClassifier = 'java8'
+}
+
+tasks.named('build') { dependsOn 'shadeDowngradedApi' }

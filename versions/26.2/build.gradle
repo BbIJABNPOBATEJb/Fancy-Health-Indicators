@@ -4,11 +4,6 @@ plugins {
 
 apply from: '../../common/shared.gradle'
 
-sourceSets.main {
-    java.srcDirs += file('../26.3/src/main/java')
-    resources.srcDirs += file('../26.3/src/main/resources')
-}
-
 dependencies {
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
     implementation "net.fabricmc:fabric-loader:${project.loader_version}"

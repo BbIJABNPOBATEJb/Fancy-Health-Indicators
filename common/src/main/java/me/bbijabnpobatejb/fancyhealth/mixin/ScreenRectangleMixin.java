@@ -1,3 +1,4 @@
+//? if >=1.21.6
 package me.bbijabnpobatejb.fancyhealth.mixin;
 
 import net.minecraft.client.gui.navigation.ScreenRectangle;

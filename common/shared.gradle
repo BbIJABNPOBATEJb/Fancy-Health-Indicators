@@ -1,8 +1,13 @@
+apply from: rootProject.file('../../common/preprocess.gradle')
+
 version = project.mod_version
 group = 'me.bbijabnpobatejb'
 
+def loaderName = project.findProperty('loader') ?: 'fabric'
+def mcVersion = project.minecraft_version
+
 base {
-    archivesName = "fancyhealth-${project.minecraft_version}"
+    archivesName = loaderName == 'fabric' ? "fancyhealth-${mcVersion}" : "fancyhealth-${loaderName}-${mcVersion}"
 }
 
 repositories {
@@ -11,17 +16,56 @@ repositories {
 
 def common = rootProject.file('../../common')
 def stand = rootProject.file('../../stand/dev')
+def generated = layout.buildDirectory.dir('preprocessed').get().asFile
+
+def preprocess = tasks.register('preprocessSources') {
+    inputs.dir(new File(common, 'src/main/java'))
+    if (new File(stand, 'java').exists()) inputs.dir(new File(stand, 'java'))
+    inputs.property('minecraft', mcVersion)
+    inputs.property('loader', loaderName)
+    outputs.dir(generated)
+    doLast {
+        preprocessTree(new File(common, 'src/main/java'), new File(generated, 'main'), mcVersion, loaderName)
+        preprocessTree(new File(stand, 'java'), new File(generated, 'dev'), mcVersion, loaderName)
+        def javaRelease = (project.findProperty('java_target') ?: project.java_release) as int
+        def javaLevel = javaRelease >= 21 ? 'JAVA_21' : javaRelease >= 17 ? 'JAVA_17' : javaRelease >= 16 ? 'JAVA_16' : 'JAVA_8'
+        def writeMixins = { File dir, String pkg, File res, String name ->
+            def list = []
+            if (dir.exists()) dir.eachFile { if (it.name.endsWith('.java')) list << (it.name - '.java') }
+            res.mkdirs()
+            new File(res, name).setText(groovy.json.JsonOutput.prettyPrint(groovy.json.JsonOutput.toJson([
+                    required: true, minVersion: '0.8', package: pkg, compatibilityLevel: javaLevel,
+                    client: list.sort(), injectors: [defaultRequire: 1]])), 'UTF-8')
+        }
+        writeMixins(new File(generated, 'main/me/bbijabnpobatejb/fancyhealth/mixin'), 'me.bbijabnpobatejb.fancyhealth.mixin',
+                new File(generated, 'resources'), 'fancyhealth.mixins.json')
+        writeMixins(new File(generated, 'dev/me/bbijabnpobatejb/fancyhealth/dev/mixin'), 'me.bbijabnpobatejb.fancyhealth.dev.mixin',
+                new File(generated, 'devResources'), 'fancyhealthdev.mixins.json')
+    }
+}
 
 sourceSets {
     main {
-        java.srcDirs += new File(common, 'src/main/java')
-        resources.srcDirs += new File(common, 'src/main/resources')
+        java.srcDirs = [new File(generated, 'main')]
+        resources.srcDirs = [new File(common, 'src/main/resources'), new File(common, "src/meta/${loaderName}"), new File(generated, 'resources')]
     }
     dev {
-        java.srcDirs += new File(stand, 'java')
-        resources.srcDirs += new File(stand, 'resources')
+        java.srcDirs = [new File(generated, 'dev')]
+        resources.srcDirs = [new File(stand, 'resources'), new File(generated, 'devResources')]
         compileClasspath += main.compileClasspath + main.output
         runtimeClasspath += main.runtimeClasspath + main.output
+    }
+}
+
+tasks.named('compileJava') { dependsOn preprocess }
+tasks.named('processResources') { dependsOn preprocess }
+tasks.matching { it.name in ['compileDevJava', 'processDevResources', 'sourcesJar'] }.configureEach { dependsOn preprocess }
+
+tasks.register('activate') {
+    doLast {
+        activateTree(new File(common, 'src/main/java'), mcVersion, loaderName)
+        activateTree(new File(stand, 'java'), mcVersion, loaderName)
+        println "common sources switched to ${mcVersion} ${loaderName}"
     }
 }
 
@@ -32,24 +76,26 @@ dependencies {
     devAnnotationProcessor 'org.projectlombok:lombok:1.18.48'
 }
 
-loom {
-    mods {
-        fancyhealth { sourceSet sourceSets.main }
-        fancyhealthdev { sourceSet sourceSets.dev }
-    }
-    runs {
-        client {
-            source sourceSets.dev
-            programArgs '--username', 'FancyLab'
+if (loaderName == 'fabric') {
+    loom {
+        mods {
+            fancyhealth { sourceSet sourceSets.main }
+            fancyhealthdev { sourceSet sourceSets.dev }
+        }
+        runs {
+            client {
+                source sourceSets.dev
+                programArgs '--username', 'FancyLab'
+            }
         }
     }
 }
 
 processResources {
-    inputs.property 'version', project.version
-    inputs.property 'range', project.minecraft_range
-    filesMatching('fabric.mod.json') {
-        expand 'version': project.version, 'range': project.minecraft_range
+    def props = [version: project.version, range: project.minecraft_range, java: project.findProperty('java_target') ?: project.java_release]
+    inputs.properties props
+    filesMatching(['fabric.mod.json', 'META-INF/mods.toml', 'META-INF/neoforge.mods.toml']) {
+        expand props
     }
 }
 

@@ -2,7 +2,6 @@ package me.bbijabnpobatejb.fancyhealth.render;
 
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.LivingEntity;
 
 public interface Canvas {
@@ -29,7 +28,7 @@ public interface Canvas {
 
     void text(Font font, Component text, int x, int y, int argb, boolean shadow);
 
-    void sprite(Identifier texture, int x, int y, int w, int h, int u, int v, int texW, int texH, int argb);
+    void sprite(String texture, int x, int y, int w, int h, int u, int v, int texW, int texH, int argb);
 
     void entity(LivingEntity entity, int x1, int y1, int x2, int y2, int size, float yOffset, float mouseX, float mouseY);
 

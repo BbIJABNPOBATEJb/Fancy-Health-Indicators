@@ -1,5 +1,6 @@
 package me.bbijabnpobatejb.fancyhealth.ui;
 
+import me.bbijabnpobatejb.fancyhealth.compat.Mc;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import me.bbijabnpobatejb.fancyhealth.config.BarStyle;
@@ -60,13 +61,13 @@ public class PresetRow extends Rows.Row {
         } else {
             Theme.rrect(c, x0, y0, x1, y1, 10, bg);
         }
-        Component title = Theme.bold(Component.translatable(key).getString());
+        Component title = Theme.bold(Mc.translatable(key).getString());
         Theme.text(c, title, x0 + 10, y0 + 8, Theme.TEXT);
         float after = x0 + 14 + Theme.width(title);
         if (active) Theme.icon(c, 8, after + 4, y0 + 12, 9, Theme.BLUE);
         else if (base) Theme.small(c, Theme.tr("fancyhealth.label.edited"), after, y0 + 9, Theme.ORANGE);
         int textW = (int) ((x1 - x0) * 0.54f);
-        List<String> lines = Theme.wrap(Component.translatable(key + ".desc").getString(), (int) (textW / 0.8f), 2);
+        List<String> lines = Theme.wrap(Mc.translatable(key + ".desc").getString(), (int) (textW / 0.8f), 2);
         for (int i = 0; i < lines.size(); i++) Theme.small(c, Theme.ui(lines.get(i)), x0 + 10, y0 + 21 + i * 9, Theme.TEXT2);
 
         float cycle = clock % 2.4f;
@@ -78,7 +79,7 @@ public class PresetRow extends Rows.Row {
         model.absorption = 0;
         model.armor = 8;
         model.flash = cycle % 0.8f < 0.15f && cycle > 0.8f ? 0.8f : 0f;
-        model.name = Component.translatable("fancyhealth.preview.sample_name");
+        model.name = Mc.translatable("fancyhealth.preview.sample_name");
         model.relation = EntityFilter.HOSTILE;
         model.time = clock;
         FhConfig.BarLook look = sample.overhead.enabled ? sample.overhead.look : sample.target.look;

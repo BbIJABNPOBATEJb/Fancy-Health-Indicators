@@ -1,0 +1,11 @@
+plugins {
+    id 'net.fabricmc.fabric-loom' version '1.19.4'
+}
+
+apply from: '../../common/shared.gradle'
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    localRuntime "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+}

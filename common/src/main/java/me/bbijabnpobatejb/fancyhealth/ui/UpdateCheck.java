@@ -40,7 +40,7 @@ public class UpdateCheck {
             connection.setRequestProperty("User-Agent", "fancyhealth/" + FancyHealth.platform().modVersion());
             if (connection.getResponseCode() != 200) return;
             try (Reader reader = new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8)) {
-                JsonArray versions = JsonParser.parseReader(reader).getAsJsonArray();
+                JsonArray versions = new JsonParser().parse(reader).getAsJsonArray();
                 if (versions.size() == 0) return;
                 JsonObject top = versions.get(0).getAsJsonObject();
                 String number = top.get("version_number").getAsString();

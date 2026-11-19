@@ -1,11 +1,11 @@
 package me.bbijabnpobatejb.fancyhealth.track;
 
+import me.bbijabnpobatejb.fancyhealth.compat.Mc;
 import lombok.experimental.UtilityClass;
 import me.bbijabnpobatejb.fancyhealth.config.FhConfig;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.multiplayer.PlayerInfo;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.NeutralMob;
 import net.minecraft.world.entity.boss.enderdragon.EnderDragon;
@@ -13,7 +13,6 @@ import net.minecraft.world.entity.boss.wither.WitherBoss;
 import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.entity.monster.Enemy;
 import net.minecraft.world.entity.monster.ElderGuardian;
-import net.minecraft.world.entity.monster.warden.Warden;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.scores.Team;
 
@@ -28,14 +27,14 @@ public class EntityFilter {
     public static final int BOSS = 0xFFB65CFF;
 
     public boolean isBoss(LivingEntity e) {
-        return e instanceof EnderDragon || e instanceof WitherBoss || e instanceof Warden || e instanceof ElderGuardian;
+        return e instanceof EnderDragon || e instanceof WitherBoss || e instanceof ElderGuardian || Mc.entityTypeId(e.getType()).equals("minecraft:warden");
     }
 
     public boolean accept(LivingEntity e, FhConfig c) {
         Minecraft mc = Minecraft.getInstance();
         if (e instanceof ArmorStand) return c.filters.armorStands;
         if (e.isInvisible() || e.isSpectator()) return false;
-        if (!c.filters.blacklist.isEmpty() && c.filters.blacklist.contains(BuiltInRegistries.ENTITY_TYPE.getKey(e.getType()).toString())) return false;
+        if (!c.filters.blacklist.isEmpty() && c.filters.blacklist.contains(Mc.entityTypeId(e.getType()))) return false;
         if (e == mc.player) return c.general.selfInThirdPerson && !mc.options.getCameraType().isFirstPerson();
         if (isNpc(e)) return c.filters.npcs;
         if (e instanceof Player) return c.filters.players && me.bbijabnpobatejb.fancyhealth.api.FancyHealthApi.allowed(me.bbijabnpobatejb.fancyhealth.api.Restriction.PLAYERS);
@@ -51,14 +50,18 @@ public class EntityFilter {
     }
 
     public boolean isNpc(LivingEntity e) {
-        if (BuiltInRegistries.ENTITY_TYPE.getKey(e.getType()).getPath().equals("mannequin")) return true;
+        if (Mc.entityTypeId(e.getType()).equals("minecraft:mannequin")) return true;
         if (!(e instanceof Player) || e == Minecraft.getInstance().player) return false;
         if (e.getUUID().version() == 2) return true;
         ClientPacketListener connection = Minecraft.getInstance().getConnection();
         if (connection == null) return false;
         PlayerInfo info = connection.getPlayerInfo(e.getUUID());
         if (info == null) return true;
+        //? if >=1.19.3 {
         for (PlayerInfo listed : connection.getListedOnlinePlayers()) {
+        //?} else {
+        /*for (PlayerInfo listed : connection.getOnlinePlayers()) {
+        *///?}
             if (listed == info) return false;
         }
         return true;

@@ -1,15 +1,14 @@
 package me.bbijabnpobatejb.fancyhealth.render;
 
+import me.bbijabnpobatejb.fancyhealth.compat.Mc;
 import lombok.experimental.UtilityClass;
 import me.bbijabnpobatejb.fancyhealth.config.FontChoice;
 import me.bbijabnpobatejb.fancyhealth.config.TextEffect;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.Identifier;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -17,7 +16,7 @@ import java.util.Map;
 @UtilityClass
 public class TextFx {
 
-    private final Map<FontChoice, FontDescription> FONTS = new EnumMap<>(FontChoice.class);
+    private final Map<FontChoice, Style> FONTS = new EnumMap<>(FontChoice.class);
     private final int[][] RING1 = {{-1, -1}, {0, -1}, {1, -1}, {-1, 0}, {1, 0}, {-1, 1}, {0, 1}, {1, 1}};
     private final int[][] RING2 = {{-2, -1}, {-2, 0}, {-2, 1}, {2, -1}, {2, 0}, {2, 1}, {-1, -2}, {0, -2}, {1, -2}, {-1, 2}, {0, 2}, {1, 2}, {-1, -1}, {1, -1}, {-1, 1}, {1, 1}, {-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 
@@ -26,16 +25,13 @@ public class TextFx {
     }
 
     public MutableComponent styled(String text, FontChoice font) {
-        MutableComponent c = Component.literal(text);
-        if (font != null && font.id != null) {
-            FontDescription d = FONTS.computeIfAbsent(font, f -> new FontDescription.Resource(Identifier.parse(f.id)));
-            c.setStyle(Style.EMPTY.withFont(d));
-        }
+        MutableComponent c = Mc.literal(text);
+        if (font != null && font.id != null) c.setStyle(FONTS.computeIfAbsent(font, f -> Mc.font(f.id)));
         return c;
     }
 
     public Component plain(Component c) {
-        return Component.literal(c.getString()).setStyle(Style.EMPTY.withFont(c.getStyle().getFont()));
+        return Mc.literal(c.getString()).setStyle(Style.EMPTY.withFont(c.getStyle().getFont()));
     }
 
     public int width(Component c) {

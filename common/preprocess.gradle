@@ -1,0 +1,171 @@
+class Preprocessor {
+
+    final String minecraft
+    final String loader
+
+    Preprocessor(String minecraft, String loader) {
+        this.minecraft = minecraft
+        this.loader = loader
+    }
+
+    static List<Integer> parts(String version) {
+        version.split(/[^0-9]+/).findAll { it }.collect { it as int }
+    }
+
+    static int compare(String a, String b) {
+        def x = parts(a), y = parts(b)
+        for (int i = 0; i < Math.max(x.size(), y.size()); i++) {
+            int p = i < x.size() ? x[i] : 0, q = i < y.size() ? y[i] : 0
+            if (p != q) return p <=> q
+        }
+        0
+    }
+
+    boolean eval(String expression) {
+        def tokens = (expression =~ /&&|\|\||!=|>=|<=|[()!<>=]|[A-Za-z_][A-Za-z0-9_]*|[0-9][0-9.A-Za-z\-]*/).collect { it }
+        def pos = [0]
+        def peek = { pos[0] < tokens.size() ? tokens[pos[0]] : null }
+        def next = { tokens[pos[0]++] }
+        def or
+        def atom = {
+            def t = next()
+            if (t == '(') {
+                def v = or()
+                next()
+                return v
+            }
+            if (t == '!') return !atom()
+            if (t in ['>=', '<=', '>', '<', '=', '!=']) {
+                int c = compare(minecraft, next())
+                switch (t) {
+                    case '>=': return c >= 0
+                    case '<=': return c <= 0
+                    case '>': return c > 0
+                    case '<': return c < 0
+                    case '=': return c == 0
+                    default: return c != 0
+                }
+            }
+            if (t ==~ /[0-9].*/) return compare(minecraft, t) == 0
+            return t == loader
+        }
+        def and = {
+            def v = atom()
+            while (peek() == '&&') {
+                next()
+                def r = atom()
+                v = v && r
+            }
+            v
+        }
+        or = {
+            def v = and()
+            while (peek() == '||') {
+                next()
+                def r = and()
+                v = v || r
+            }
+            v
+        }
+        or()
+    }
+
+    static String condition(String trimmed) {
+        def m = trimmed =~ /^(?:\*\/)?\/\/\?\}?\s*(?:else\s+)?if\s+(.*?)\s*\{?$/
+        m.find() ? m.group(1) : null
+    }
+
+    String process(String text, boolean keepMarkers) {
+        def lines = text.split('\n', -1) as List
+        if (lines && lines[0].trim().startsWith('//? if ') && !lines[0].trim().endsWith('{')) {
+            if (!eval(condition(lines[0].trim()))) return null
+            if (!keepMarkers) lines = lines.drop(1)
+        }
+        def out = []
+        boolean inBlock = false, active = false, taken = false, first = false
+        for (String line : lines) {
+            String t = line.trim()
+            String indent = line.substring(0, line.length() - line.stripLeading().length())
+            boolean open = t.startsWith('//? if ') && t.endsWith('{')
+            boolean elseIf = t ==~ /^(\*\/)?\/\/\?\}\s*else\s+if\s+.*\{$/
+            boolean elseBranch = t ==~ /^(\*\/)?\/\/\?\}\s*else\s*\{$/
+            boolean close = t ==~ /^(\*\/)?\/\/\?\}$/
+            if (open || elseIf || elseBranch || close) {
+                String marker = t.startsWith('*/') ? t.substring(2) : t
+                if (keepMarkers) out << indent + (inBlock && !active && !first ? '*/' : '') + marker
+                if (open) {
+                    inBlock = true
+                    active = eval(condition(t))
+                    taken = active
+                } else if (elseIf) {
+                    active = !taken && eval(condition(t))
+                    taken = taken || active
+                } else if (elseBranch) {
+                    active = !taken
+                    taken = true
+                } else {
+                    inBlock = false
+                }
+                first = true
+                continue
+            }
+            if (!inBlock) {
+                out << line
+                continue
+            }
+            String body = line
+            if (first) {
+                String stripped = line.stripLeading()
+                if (stripped.startsWith('/*')) body = indent + stripped.substring(2)
+            }
+            if (active) {
+                out << body
+            } else if (keepMarkers) {
+                if (first) {
+                    String s = body.stripLeading()
+                    out << indent + '/*' + s
+                } else {
+                    out << body
+                }
+            }
+            first = false
+        }
+        out.join('\n')
+    }
+}
+
+ext.Preprocessor = Preprocessor
+
+ext.preprocessTree = { File from, File to, String minecraft, String loader ->
+    def p = new Preprocessor(minecraft, loader)
+    project.delete(to)
+    if (!from.exists()) return
+    from.eachFileRecurse(groovy.io.FileType.FILES) { File f ->
+        def rel = from.toPath().relativize(f.toPath()).toString()
+        def target = new File(to, rel)
+        if (f.name.endsWith('.java')) {
+            def text = f.getText('UTF-8').replace('\r\n', '\n')
+            def result = p.process(text, false)
+            if (result == null) return
+            target.parentFile.mkdirs()
+            target.setText(result, 'UTF-8')
+        } else {
+            target.parentFile.mkdirs()
+            target.bytes = f.bytes
+        }
+    }
+}
+
+ext.activateTree = { File dir, String minecraft, String loader ->
+    def p = new Preprocessor(minecraft, loader)
+    dir.eachFileRecurse(groovy.io.FileType.FILES) { File f ->
+        if (!f.name.endsWith('.java')) return
+        def text = f.getText('UTF-8').replace('\r\n', '\n')
+        if (!text.contains('//?')) return
+        def lines = text.split('\n', -1) as List
+        def header = lines && lines[0].trim().startsWith('//? if ') && !lines[0].trim().endsWith('{')
+        def result = p.process(text, true)
+        if (result == null && header) result = text
+        if (result != null && result != text) f.setText(result, 'UTF-8')
+    }
+}

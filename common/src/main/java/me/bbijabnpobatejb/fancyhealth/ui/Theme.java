@@ -1,14 +1,13 @@
 package me.bbijabnpobatejb.fancyhealth.ui;
 
+import me.bbijabnpobatejb.fancyhealth.compat.Mc;
 import lombok.experimental.UtilityClass;
 import me.bbijabnpobatejb.fancyhealth.render.Canvas;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FontDescription;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.Style;
-import net.minecraft.resources.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,23 +33,23 @@ public class Theme {
     public final int TRACK = 0xFF3A3A3C;
     public final int RESET_HIGHLIGHT = 0x3830D158;
 
-    private final FontDescription UI = new FontDescription.Resource(Identifier.fromNamespaceAndPath("fancyhealth", "ui"));
-    private final FontDescription BOLD = new FontDescription.Resource(Identifier.fromNamespaceAndPath("fancyhealth", "ui_bold"));
+    private final Style UI = Mc.font("fancyhealth:ui");
+    private final Style BOLD = Mc.font("fancyhealth:ui_bold");
 
     public Font font() {
         return Minecraft.getInstance().font;
     }
 
     public MutableComponent ui(String s) {
-        return Component.literal(s).setStyle(Style.EMPTY.withFont(UI));
+        return Mc.literal(s).setStyle(UI);
     }
 
     public MutableComponent bold(String s) {
-        return Component.literal(s).setStyle(Style.EMPTY.withFont(BOLD));
+        return Mc.literal(s).setStyle(BOLD);
     }
 
     public MutableComponent tr(String key) {
-        return ui(Component.translatable(key).getString());
+        return ui(Mc.translatable(key).getString());
     }
 
     public int width(Component c) {
@@ -108,8 +107,8 @@ public class Theme {
             List<String> two = wrap(t.getString(), (int) (maxW / 0.7f), 3);
             if (two.size() == 2 && width(two.get(0)) * 0.7f <= maxW && width(two.get(1)) * 0.7f <= maxW) {
                 Style st = t.getStyle();
-                scaled(c, Component.literal(two.get(0)).setStyle(st), x, y - 2.6f, 0.7f, color);
-                scaled(c, Component.literal(two.get(1)).setStyle(st), x, y + 4.4f, 0.7f, color);
+                scaled(c, Mc.literal(two.get(0)).setStyle(st), x, y - 2.6f, 0.7f, color);
+                scaled(c, Mc.literal(two.get(1)).setStyle(st), x, y + 4.4f, 0.7f, color);
                 return;
             }
         }
@@ -162,7 +161,7 @@ public class Theme {
         return out;
     }
 
-    public final Identifier ICONS = Identifier.fromNamespaceAndPath("fancyhealth", "textures/gui/ui_icons.png");
+    public final String ICONS = "fancyhealth:textures/gui/ui_icons.png";
     public final int ICON_COUNT = 11;
     public final int ICON_MAX_SCALE = 6;
 
@@ -175,7 +174,7 @@ public class Theme {
         return Math.max(1, (int) Math.round(Minecraft.getInstance().getWindow().getGuiScale()));
     }
 
-    public final Identifier CORNERS = Identifier.fromNamespaceAndPath("fancyhealth", "textures/gui/corners.png");
+    public final String CORNERS = "fancyhealth:textures/gui/corners.png";
     private final int CORNER_MAX = 64;
     private final int CORNERS_W = 2208;
     private final int CORNERS_H = 264;

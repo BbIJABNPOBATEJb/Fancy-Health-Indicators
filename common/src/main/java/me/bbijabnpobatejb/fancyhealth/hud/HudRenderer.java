@@ -18,7 +18,6 @@ import me.bbijabnpobatejb.fancyhealth.track.NameTags;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -31,7 +30,7 @@ public class HudRenderer {
     private float dt;
     private final BarModel MODEL = new BarModel();
     private final List<Entry> ENTRIES = new ArrayList<>();
-    private final Vector3f POS = new Vector3f();
+    private final float[] POS = new float[3];
 
     private final NameTags.Layout LAYOUT = new NameTags.Layout();
 
@@ -102,8 +101,8 @@ public class HudRenderer {
             double dist = Math.sqrt(cam.distanceToSqr(p.x, ay, p.z));
             if (dist > c.overhead.maxDistance) continue;
             if (!Projection.project(p.x, ay, p.z, w, h, POS)) continue;
-            if (POS.x < -80 || POS.x > w + 80 || POS.y < -60 || POS.y > h + 60) continue;
-            ENTRIES.add(new Entry(s, POS.x, POS.y, POS.z, (float) dist, LAYOUT.shown, below, LAYOUT.seeThrough));
+            if (POS[0] < -80 || POS[0] > w + 80 || POS[1] < -60 || POS[1] > h + 60) continue;
+            ENTRIES.add(new Entry(s, POS[0], POS[1], POS[2], (float) dist, LAYOUT.shown, below, LAYOUT.seeThrough));
         }
         ENTRIES.sort(Comparator.comparingDouble(Entry::depth).reversed());
         for (Entry en : ENTRIES) {

@@ -32,7 +32,7 @@ public class Sounds {
         Long last = LAST.get(name);
         if (gap > 0 && last != null && now - last < gap) return;
         LAST.put(name, now);
-        SoundEvent ev = EVENTS.computeIfAbsent(name, n -> SoundEvent.createVariableRangeEvent(FancyHealth.id("ui." + n)));
+        SoundEvent ev = EVENTS.computeIfAbsent(name, n -> me.bbijabnpobatejb.fancyhealth.compat.Mc.sound(FancyHealth.id("ui." + n)));
         float vol = c.general.uiVolume * (name.equals("hover") || name.equals("tick") ? 0.55f : 1f);
         Minecraft.getInstance().getSoundManager().play(SimpleSoundInstance.forUI(ev, pitch, vol));
     }

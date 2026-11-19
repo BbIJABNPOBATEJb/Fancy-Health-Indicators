@@ -1,5 +1,6 @@
 package me.bbijabnpobatejb.fancyhealth.ui;
 
+import me.bbijabnpobatejb.fancyhealth.compat.Mc;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import me.bbijabnpobatejb.fancyhealth.config.Anchor;
@@ -160,8 +161,8 @@ public class ConfigUi implements Rows.Host {
         String groupSection = null;
         for (Search.Hit h : hits) {
             if (h.tab() != groupTab || !h.section().equals(groupSection)) {
-                String title = Component.translatable(h.tab().key()).getString();
-                String sec = h.section().isEmpty() ? "" : Component.translatable(h.section()).getString();
+                String title = Mc.translatable(h.tab().key()).getString();
+                String sec = h.section().isEmpty() ? "" : Mc.translatable(h.section()).getString();
                 if (!sec.isEmpty() && !sec.equalsIgnoreCase(title)) title += " · " + sec;
                 results.add(new Rows.Caption(title, h.tab().color));
                 groupTab = h.tab();
@@ -238,7 +239,7 @@ public class ConfigUi implements Rows.Host {
         FhConfig cur = ConfigStore.get();
         if (row.inactive(cur) && row.activate != null) {
             row.activate.accept(cur);
-            toast(Component.translatable("fancyhealth.toast.parent_changed", Component.translatable(row.parentKey)).getString(), Theme.GREEN);
+            toast(Mc.translatable("fancyhealth.toast.parent_changed", Mc.translatable(row.parentKey)).getString(), Theme.GREEN);
         }
         if (!(row instanceof PresetRow)) ConfigStore.get().preset = "custom";
         markDirty();
@@ -309,25 +310,25 @@ public class ConfigUi implements Rows.Host {
         sidebar(c, hmx, my, dt, overReset, overDone);
 
         c.fill((int) listX0, 0, (int) listX1, height, Theme.PANEL);
-        Component title = Theme.bold(Component.translatable(searching() ? "fancyhealth.search.title" : tab.key()).getString());
+        Component title = Theme.bold(Mc.translatable(searching() ? "fancyhealth.search.title" : tab.key()).getString());
         Theme.scaled(c, title, listX0 + 12, 11, 1.25f, Theme.TEXT);
         if (searching()) {
-            Component pc = Theme.ui(Component.translatable("fancyhealth.search.count", resultCount).getString());
+            Component pc = Theme.ui(Mc.translatable("fancyhealth.search.count", resultCount).getString());
             Theme.small(c, pc, listX1 - 10 - Theme.width(pc) * 0.8f, 15, Theme.TEXT3);
         } else if (tab != Tab.PRESETS && !me.bbijabnpobatejb.fancyhealth.api.FancyHealthApi.active().isEmpty()) {
             StringBuilder sb = new StringBuilder();
             for (me.bbijabnpobatejb.fancyhealth.api.Restriction r : me.bbijabnpobatejb.fancyhealth.api.FancyHealthApi.active()) {
                 if (sb.length() > 0) sb.append(", ");
-                sb.append(Component.translatable("fancyhealth.restriction." + r.name().toLowerCase(java.util.Locale.ROOT)).getString());
+                sb.append(Mc.translatable("fancyhealth.restriction." + r.name().toLowerCase(java.util.Locale.ROOT)).getString());
             }
-            Component pc = Theme.ui(Component.translatable("fancyhealth.server.limited", sb.toString()).getString());
+            Component pc = Theme.ui(Mc.translatable("fancyhealth.server.limited", sb.toString()).getString());
             Theme.small(c, pc, listX1 - 10 - Theme.width(pc) * 0.8f, 15, Theme.ORANGE);
         } else if (tab == Tab.PRESETS) {
             float importX0 = listX1 - 10 - buttonWidth("fancyhealth.button.import");
             headerButton(c, "fancyhealth.button.import", importX0, listX1 - 10, hmx, my);
             headerButton(c, "fancyhealth.button.export", importX0 - 6 - buttonWidth("fancyhealth.button.export"), importX0 - 6, hmx, my);
         } else {
-            Component pc = Theme.ui(Component.translatable("fancyhealth.label.preset", Component.translatable("fancyhealth.preset." + cfg.preset)).getString());
+            Component pc = Theme.ui(Mc.translatable("fancyhealth.label.preset", Mc.translatable("fancyhealth.preset." + cfg.preset)).getString());
             Theme.small(c, pc, listX1 - 10 - Theme.width(pc) * 0.8f, 15, Theme.TEXT3);
         }
 
@@ -390,8 +391,8 @@ public class ConfigUi implements Rows.Host {
         if (searching() && results.isEmpty()) {
             float cx = (listX0 + listX1) / 2f, cy = listY0 + 60;
             Theme.icon(c, 10, cx, cy, 22, Theme.TEXT3);
-            Theme.centered(c, Theme.bold(Component.translatable("fancyhealth.search.empty").getString()), cx, cy + 20, Theme.TEXT2);
-            List<String> tl = Theme.wrap(Component.translatable("fancyhealth.search.try").getString(), (int) ((listX1 - listX0 - 30) / 0.8f), 3);
+            Theme.centered(c, Theme.bold(Mc.translatable("fancyhealth.search.empty").getString()), cx, cy + 20, Theme.TEXT2);
+            List<String> tl = Theme.wrap(Mc.translatable("fancyhealth.search.try").getString(), (int) ((listX1 - listX0 - 30) / 0.8f), 3);
             for (int i = 0; i < tl.size(); i++) {
                 Component line = Theme.ui(tl.get(i));
                 Theme.small(c, line, cx - Theme.width(line) * 0.4f, cy + 34 + i * 10, Theme.TEXT3);
@@ -413,17 +414,17 @@ public class ConfigUi implements Rows.Host {
         String desc;
         int descColor = Theme.TEXT2;
         if (overReset) {
-            desc = resetAllMark ? Component.translatable("fancyhealth.hint.reset_all").getString()
-                    : Component.translatable("fancyhealth.hint.reset", Component.translatable(tab.key())).getString();
+            desc = resetAllMark ? Mc.translatable("fancyhealth.hint.reset_all").getString()
+                    : Mc.translatable("fancyhealth.hint.reset", Mc.translatable(tab.key())).getString();
             descColor = Theme.GREEN;
         } else {
             Rows.Row info = active != null ? active : hovered;
             String dk = info != null ? info.descKey() : null;
             boolean has = dk != null && Language.getInstance().has(dk);
-            desc = Component.translatable(has ? dk : "fancyhealth.hint.general").getString();
+            desc = Mc.translatable(has ? dk : "fancyhealth.hint.general").getString();
             if (!has) descColor = Theme.TEXT3;
             if (info != null && info.inactive(cfg)) {
-                desc = Component.translatable("fancyhealth.hint.needs", Component.translatable(info.parentKey)).getString() + (has ? " " + desc : "");
+                desc = Mc.translatable("fancyhealth.hint.needs", Mc.translatable(info.parentKey)).getString() + (has ? " " + desc : "");
                 descColor = Theme.ORANGE;
             }
         }
@@ -503,7 +504,7 @@ public class ConfigUi implements Rows.Host {
         float lift = doneHover * 0.8f;
         Theme.shadow(c, 8, height - 26 - lift, sideW - 8, height - 8 - lift, 9, (int) (60 + 60 * doneHover));
         Theme.rrect(c, 8, height - 26 - lift, sideW - 8, height - 8 - lift, 9, Theme.mix(Theme.BLUE, 0xFF409CFF, doneHover));
-        Theme.centered(c, Theme.bold(Component.translatable("fancyhealth.button.done").getString()), sideW / 2f, height - 21 - lift, 0xFFFFFFFF);
+        Theme.centered(c, Theme.bold(Mc.translatable("fancyhealth.button.done").getString()), sideW / 2f, height - 21 - lift, 0xFFFFFFFF);
     }
 
     private float tabStep() {
@@ -519,7 +520,7 @@ public class ConfigUi implements Rows.Host {
         Theme.icon(c, 10, x0 + 9, cy, 8, searching() ? Theme.TEXT2 : Theme.TEXT3);
         float tx = x0 + 17, maxW = x1 - tx - (searching() ? 14 : 4);
         if (!searching()) {
-            String ph = Component.translatable("fancyhealth.search.placeholder").getString();
+            String ph = Mc.translatable("fancyhealth.search.placeholder").getString();
             Theme.small(c, Theme.ui(ph), tx, cy - 3.5f, Theme.TEXT3);
             if (searchFocus && (time % 1f) < 0.55f) Theme.rrect(c, tx - 0.5f, cy - 4.5f, tx + 0.5f, cy + 4.5f, 0, Theme.BLUE);
         } else {
@@ -581,7 +582,7 @@ public class ConfigUi implements Rows.Host {
         Theme.shadow(c, r[0], r[1], r[2], r[3], 12, (int) (150 * updateAnim));
         Theme.rrect(c, r[0], r[1], r[2], r[3], 12, 0xF62C2C2E);
         Theme.icon(c, 0, r[0] + 16, r[1] + 13, 9, Theme.ORANGE);
-        Theme.text(c, Theme.bold(Component.translatable("fancyhealth.update.title", updateShown).getString()), r[0] + 25, r[1] + 9, Theme.TEXT);
+        Theme.text(c, Theme.bold(Mc.translatable("fancyhealth.update.title", updateShown).getString()), r[0] + 25, r[1] + 9, Theme.TEXT);
         String[] keys = {"fancyhealth.update.download", "fancyhealth.update.hide", "fancyhealth.update.never"};
         float[][] b = cardButtons();
         for (int i = 0; i < 3; i++) {
@@ -708,7 +709,7 @@ public class ConfigUi implements Rows.Host {
         }
         markDirty();
         Sounds.play("reset");
-        toast(Component.translatable("fancyhealth.toast.reset_tab", Component.translatable(tab.key())).getString(), Theme.GREEN);
+        toast(Mc.translatable("fancyhealth.toast.reset_tab", Mc.translatable(tab.key())).getString(), Theme.GREEN);
         preview.react("reset", ConfigStore.get());
     }
 
@@ -724,7 +725,7 @@ public class ConfigUi implements Rows.Host {
         ConfigStore.set(Presets.create("classic"));
         markDirty();
         Sounds.play("reset", 0.8f);
-        toast(Component.translatable("fancyhealth.toast.reset_all").getString(), Theme.GREEN);
+        toast(Mc.translatable("fancyhealth.toast.reset_all").getString(), Theme.GREEN);
         preview.react("reset", ConfigStore.get());
     }
 
@@ -740,10 +741,10 @@ public class ConfigUi implements Rows.Host {
             d.end();
             Minecraft.getInstance().keyboardHandler.setClipboard(SHARE_PREFIX + Base64.getEncoder().encodeToString(out.toByteArray()));
             Sounds.play("success");
-            toast(Component.translatable("fancyhealth.toast.copied").getString(), Theme.GREEN);
+            toast(Mc.translatable("fancyhealth.toast.copied").getString(), Theme.GREEN);
         } catch (RuntimeException e) {
             Sounds.play("error");
-            toast(Component.translatable("fancyhealth.toast.error").getString(), Theme.RED);
+            toast(Mc.translatable("fancyhealth.toast.error").getString(), Theme.RED);
         }
     }
 
@@ -774,11 +775,11 @@ public class ConfigUi implements Rows.Host {
             ConfigStore.set(c);
             markDirty();
             Sounds.play("success");
-            toast(Component.translatable("fancyhealth.toast.imported").getString(), Theme.GREEN);
+            toast(Mc.translatable("fancyhealth.toast.imported").getString(), Theme.GREEN);
             preview.react("import", c);
         } catch (IllegalArgumentException | DataFormatException | com.google.gson.JsonParseException e) {
             Sounds.play("error");
-            toast(Component.translatable("fancyhealth.toast.bad_clipboard").getString(), Theme.RED);
+            toast(Mc.translatable("fancyhealth.toast.bad_clipboard").getString(), Theme.RED);
         }
     }
 
@@ -820,28 +821,28 @@ public class ConfigUi implements Rows.Host {
     }
 
     public boolean keyPressed(int key, boolean ctrl) {
-        if (key == com.mojang.blaze3d.platform.InputConstants.KEY_LSHIFT || key == com.mojang.blaze3d.platform.InputConstants.KEY_RSHIFT) shiftHeld = true;
+        if (key == me.bbijabnpobatejb.fancyhealth.compat.Keys.LSHIFT || key == me.bbijabnpobatejb.fancyhealth.compat.Keys.RSHIFT) shiftHeld = true;
         if (editing != null) {
             editing.keyPressed(this, key);
             if (!editing.editing()) editing = null;
             return true;
         }
-        if (popup != null && key == com.mojang.blaze3d.platform.InputConstants.KEY_ESCAPE) {
+        if (popup != null && key == me.bbijabnpobatejb.fancyhealth.compat.Keys.ESCAPE) {
             popup = null;
             return true;
         }
-        if (ctrl && key == com.mojang.blaze3d.platform.InputConstants.KEY_F) {
+        if (ctrl && key == me.bbijabnpobatejb.fancyhealth.compat.Keys.F) {
             searchFocus = true;
             Sounds.play("click", 1.3f);
             return true;
         }
-        if (key == com.mojang.blaze3d.platform.InputConstants.KEY_ESCAPE && (searchFocus || searching())) {
+        if (key == me.bbijabnpobatejb.fancyhealth.compat.Keys.ESCAPE && (searchFocus || searching())) {
             if (searching()) setQuery("");
             else searchFocus = false;
             return true;
         }
         if (searchFocus) {
-            if (key == com.mojang.blaze3d.platform.InputConstants.KEY_BACKSPACE) {
+            if (key == me.bbijabnpobatejb.fancyhealth.compat.Keys.BACKSPACE) {
                 if (searching()) {
                     String q = query;
                     if (ctrl) {
@@ -855,11 +856,11 @@ public class ConfigUi implements Rows.Host {
                 }
                 return true;
             }
-            if (key == com.mojang.blaze3d.platform.InputConstants.KEY_RETURN || key == com.mojang.blaze3d.platform.InputConstants.KEY_NUMPADENTER) {
+            if (key == me.bbijabnpobatejb.fancyhealth.compat.Keys.RETURN || key == me.bbijabnpobatejb.fancyhealth.compat.Keys.NUMPAD_ENTER) {
                 searchFocus = false;
                 return true;
             }
-            if (ctrl && key == com.mojang.blaze3d.platform.InputConstants.KEY_V) {
+            if (ctrl && key == me.bbijabnpobatejb.fancyhealth.compat.Keys.V) {
                 String clip = net.minecraft.client.Minecraft.getInstance().keyboardHandler.getClipboard();
                 if (clip != null) {
                     String q = (query + clip.replaceAll("\\s+", " "));
@@ -867,13 +868,13 @@ public class ConfigUi implements Rows.Host {
                 }
                 return true;
             }
-            return key != com.mojang.blaze3d.platform.InputConstants.KEY_TAB;
+            return key != me.bbijabnpobatejb.fancyhealth.compat.Keys.TAB;
         }
         return false;
     }
 
     public void keyReleased(int key) {
-        if (key == com.mojang.blaze3d.platform.InputConstants.KEY_LSHIFT || key == com.mojang.blaze3d.platform.InputConstants.KEY_RSHIFT) shiftHeld = false;
+        if (key == me.bbijabnpobatejb.fancyhealth.compat.Keys.LSHIFT || key == me.bbijabnpobatejb.fancyhealth.compat.Keys.RSHIFT) shiftHeld = false;
     }
 
     public boolean charTyped(int cp) {

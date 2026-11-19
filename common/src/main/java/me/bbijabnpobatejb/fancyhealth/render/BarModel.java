@@ -38,7 +38,7 @@ public class BarModel {
         this.anim = anim;
         time = (System.currentTimeMillis() % 100000L) / 1000f;
         heartType = FancyHealth.platform().heartType(e);
-        hardcore = e.level().getLevelData().isHardcore();
+        hardcore = me.bbijabnpobatejb.fancyhealth.compat.Mc.level(e).getLevelData().isHardcore();
         return this;
     }
 

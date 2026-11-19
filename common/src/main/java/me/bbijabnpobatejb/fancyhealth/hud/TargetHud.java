@@ -1,5 +1,6 @@
 package me.bbijabnpobatejb.fancyhealth.hud;
 
+import me.bbijabnpobatejb.fancyhealth.compat.Mc;
 import lombok.experimental.UtilityClass;
 import me.bbijabnpobatejb.fancyhealth.config.FhConfig;
 import me.bbijabnpobatejb.fancyhealth.config.TextEffect;
@@ -28,7 +29,7 @@ public class TargetHud {
         if (t != null) shown = t;
         alpha = t != null ? Math.min(1f, alpha + dt * 6f) : Math.max(0f, alpha - dt * 4f);
         if (shown == null || alpha <= 0.01f) return;
-        if (shown.isRemoved()) {
+        if (me.bbijabnpobatejb.fancyhealth.compat.Mc.removed(shown)) {
             shown = null;
             return;
         }
@@ -66,7 +67,7 @@ public class TargetHud {
         boolean lookOk = look != null && look.isAlive() && !look.isInvisible() && HealthTracker.lookAge() <= Math.max(1, linger)
                 && mc.player != null && look.distanceTo(mc.player) <= c.target.range;
         LivingEntity hit = HealthTracker.hitTarget();
-        boolean hitOk = hit != null && !hit.isRemoved() && me.bbijabnpobatejb.fancyhealth.track.EntityFilter.accept(hit, c) && HealthTracker.hitAge() <= Math.max(20, linger * 2);
+        boolean hitOk = hit != null && !me.bbijabnpobatejb.fancyhealth.compat.Mc.removed(hit) && me.bbijabnpobatejb.fancyhealth.track.EntityFilter.accept(hit, c) && HealthTracker.hitAge() <= Math.max(20, linger * 2);
         return switch (c.target.source) {
             case LOOK -> lookOk ? look : null;
             case HIT -> hitOk ? hit : null;
@@ -126,7 +127,7 @@ public class TargetHud {
                     c.pop();
                 }
                 if (cfg.target.showDistance) {
-                    Component d = Component.literal(BarRenderer.num(Math.round(dist * 10f) / 10f) + "m");
+                    Component d = Mc.literal(BarRenderer.num(Math.round(dist * 10f) / 10f) + "m");
                     c.push();
                     c.translate(w - 5, 6);
                     c.scale(0.75f);
@@ -140,12 +141,12 @@ public class TargetHud {
                 int rx = bx;
                 if (l.showArmor && m.armor > 0) {
                     BarRenderer.icon(c, 7, rx, ry - 1, white);
-                    small(c, Component.literal(String.valueOf(m.armor)), rx + 10, ry, dim, false);
+                    small(c, Mc.literal(String.valueOf(m.armor)), rx + 10, ry, dim, false);
                     rx += 26;
                 }
                 if (m.absorption > 0) {
                     BarRenderer.icon(c, 5, rx, ry - 1, white);
-                    small(c, Component.literal(BarRenderer.num(m.absorption)), rx + 10, ry, dim, false);
+                    small(c, Mc.literal(BarRenderer.num(m.absorption)), rx + 10, ry, dim, false);
                 }
                 if (l.valueText == ValueText.NONE || bh < 7) {
                     small(c, TextFx.styled(BarRenderer.value(ValueText.CURRENT_MAX, m, false), l.font), bx + bw, ry, white, true);

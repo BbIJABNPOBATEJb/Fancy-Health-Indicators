@@ -1,5 +1,6 @@
 package me.bbijabnpobatejb.fancyhealth.ui;
 
+import me.bbijabnpobatejb.fancyhealth.compat.Mc;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import me.bbijabnpobatejb.fancyhealth.FancyHealth;
@@ -20,11 +21,8 @@ import me.bbijabnpobatejb.fancyhealth.track.DamageKind;
 import me.bbijabnpobatejb.fancyhealth.track.EntityFilter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.Identifier;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.EntitySpawnReason;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 
@@ -83,8 +81,8 @@ public class Preview {
         if (mc.level == null) return null;
         if (id.equals("player") || id.equals("self")) return mc.player;
         try {
-            EntityType<?> type = BuiltInRegistries.ENTITY_TYPE.getValue(Identifier.parse(id));
-            Entity e = type.create(mc.level, EntitySpawnReason.LOAD);
+            EntityType<?> type = Mc.entityType(id);
+            Entity e = Mc.create(type, mc.level);
             if (e instanceof LivingEntity le) {
                 le.setId(-2000 - n);
                 return le;
@@ -102,7 +100,7 @@ public class Preview {
         gallery.clear();
         for (EntityType<? extends LivingEntity> t : FancyHealth.platform().previewTypes()) {
             try {
-                LivingEntity e = t.create(mc.level, EntitySpawnReason.LOAD);
+                LivingEntity e = Mc.create(t, mc.level);
                 if (e != null) {
                     e.setId(-1000 - dummies.size());
                     dummies.add(e);
@@ -253,7 +251,7 @@ public class Preview {
         model.anim = anim;
         model.time = clock;
         model.armor = e != null ? e.getArmorValue() : 4;
-        model.name = e != null ? e.getDisplayName() : Component.translatable("fancyhealth.preview.sample_name");
+        model.name = e != null ? e.getDisplayName() : Mc.translatable("fancyhealth.preview.sample_name");
         model.relation = e != null ? EntityFilter.relation(e) : EntityFilter.HOSTILE;
         model.team = 0;
     }
@@ -415,7 +413,7 @@ public class Preview {
 
     private void nametag(Canvas c, Component name, float cx, float headY, int size) {
         float s = size * 0.025f;
-        Component plain = Component.literal(name.getString());
+        Component plain = Mc.literal(name.getString());
         int w = Theme.font().width(plain);
         c.push();
         c.translate(cx, headY - 0.5f * size);
