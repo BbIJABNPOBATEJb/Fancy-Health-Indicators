@@ -12,6 +12,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @UtilityClass
 public class UpdateCheck {
@@ -54,13 +56,20 @@ public class UpdateCheck {
     }
 
     public boolean newer(String remote, String local) {
-        String[] a = remote.split("[^0-9]+"), b = local.split("[^0-9]+");
+        String[] a = core(remote).split("\\."), b = core(local).split("\\.");
         for (int i = 0; i < Math.max(a.length, b.length); i++) {
             int x = i < a.length && !a[i].isEmpty() ? Integer.parseInt(a[i]) : 0;
             int y = i < b.length && !b[i].isEmpty() ? Integer.parseInt(b[i]) : 0;
             if (x != y) return x > y;
         }
         return false;
+    }
+
+    private final Pattern CORE = Pattern.compile("\\d+(\\.\\d+)*");
+
+    private String core(String version) {
+        Matcher m = CORE.matcher(version);
+        return m.find() ? m.group() : "0";
     }
 
     public String latest() {

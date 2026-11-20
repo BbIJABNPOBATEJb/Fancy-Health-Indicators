@@ -311,25 +311,31 @@ public class ConfigUi implements Rows.Host {
 
         c.fill((int) listX0, 0, (int) listX1, height, Theme.PANEL);
         Component title = Theme.bold(Mc.translatable(searching() ? "fancyhealth.search.title" : tab.key()).getString());
-        Theme.scaled(c, title, listX0 + 12, 11, 1.25f, Theme.TEXT);
+        float titleEnd = listX0 + 12 + Theme.width(title) * 1.25f + 8;
+        Component pc = null;
+        int pcColor = Theme.TEXT3;
         if (searching()) {
-            Component pc = Theme.ui(Mc.translatable("fancyhealth.search.count", resultCount).getString());
-            Theme.small(c, pc, listX1 - 10 - Theme.width(pc) * 0.8f, 15, Theme.TEXT3);
+            pc = Theme.ui(Mc.translatable("fancyhealth.search.count", resultCount).getString());
         } else if (tab != Tab.PRESETS && !me.bbijabnpobatejb.fancyhealth.api.FancyHealthApi.active().isEmpty()) {
             StringBuilder sb = new StringBuilder();
             for (me.bbijabnpobatejb.fancyhealth.api.Restriction r : me.bbijabnpobatejb.fancyhealth.api.FancyHealthApi.active()) {
                 if (sb.length() > 0) sb.append(", ");
                 sb.append(Mc.translatable("fancyhealth.restriction." + r.name().toLowerCase(java.util.Locale.ROOT)).getString());
             }
-            Component pc = Theme.ui(Mc.translatable("fancyhealth.server.limited", sb.toString()).getString());
-            Theme.small(c, pc, listX1 - 10 - Theme.width(pc) * 0.8f, 15, Theme.ORANGE);
-        } else if (tab == Tab.PRESETS) {
+            pc = Theme.ui(Mc.translatable("fancyhealth.server.limited", sb.toString()).getString());
+            pcColor = Theme.ORANGE;
+        } else if (tab != Tab.PRESETS) {
+            pc = Theme.ui(Mc.translatable("fancyhealth.label.preset", Mc.translatable("fancyhealth.preset." + cfg.preset)).getString());
+        }
+        if (tab == Tab.PRESETS && !searching()) {
             float importX0 = listX1 - 10 - buttonWidth("fancyhealth.button.import");
+            float exportX0 = importX0 - 6 - buttonWidth("fancyhealth.button.export");
+            if (titleEnd <= exportX0) Theme.scaled(c, title, listX0 + 12, 11, 1.25f, Theme.TEXT);
             headerButton(c, "fancyhealth.button.import", importX0, listX1 - 10, hmx, my);
-            headerButton(c, "fancyhealth.button.export", importX0 - 6 - buttonWidth("fancyhealth.button.export"), importX0 - 6, hmx, my);
+            headerButton(c, "fancyhealth.button.export", exportX0, importX0 - 6, hmx, my);
         } else {
-            Component pc = Theme.ui(Mc.translatable("fancyhealth.label.preset", Mc.translatable("fancyhealth.preset." + cfg.preset)).getString());
-            Theme.small(c, pc, listX1 - 10 - Theme.width(pc) * 0.8f, 15, Theme.TEXT3);
+            Theme.scaled(c, title, listX0 + 12, 11, 1.25f, Theme.TEXT);
+            if (pc != null && titleEnd <= listX1 - 10 - Theme.width(pc) * 0.8f) Theme.small(c, pc, listX1 - 10 - Theme.width(pc) * 0.8f, 15, pcColor);
         }
 
         c.scissor((int) listX0, (int) listY0, (int) listX1, (int) listY1);
@@ -664,7 +670,7 @@ public class ConfigUi implements Rows.Host {
         }
         if (mx >= listX0 && mx < listX1) {
             if (my < listY0) {
-                if (tab == Tab.PRESETS) {
+                if (tab == Tab.PRESETS && !searching()) {
                     float importX0 = listX1 - 10 - buttonWidth("fancyhealth.button.import");
                     float exportX1 = importX0 - 6, exportX0 = exportX1 - buttonWidth("fancyhealth.button.export");
                     if (Theme.in(mx, my, importX0, 9, listX1 - 10, 25)) importClipboard();
