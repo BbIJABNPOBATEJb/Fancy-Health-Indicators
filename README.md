@@ -15,7 +15,25 @@
 
 ![Bars and damage numbers](docs/img/fight.gif)
 
-Works on any server: everything is drawn on your side, the server doesn't need anything installed.
+## What it does
+
+Fancy Health Indicators shows how much health every mob and player has, right where you are looking, and how much damage
+each of your hits deals. Vanilla Minecraft never tells you an enemy's health: this mod puts a health bar (or hearts) above
+every creature and makes the damage of every hit fly out as a number.
+
+- **You always know who is about to die.** In a fight you see at a glance which zombie is almost dead and which one is
+  still at full health, so you pick targets, finish weak mobs first and know when to retreat.
+- **You see the real damage of your weapons.** Floating numbers show every hit, crit, fire, poison, wither or fall damage,
+  so you can compare swords, axes, enchantments and potions by numbers instead of guessing.
+- **Big mobs and bosses become readable.** An Iron Golem, a Warden or the Wither have far more than 10 hearts; the mod shows
+  them as rows of hearts, colored layers or one bar with a number, so you can follow a long fight.
+- **PvP: the opponent's health above their name,** like the vanilla scoreboard under the nickname, but without any plugin
+  on the server.
+- **It looks the way you like.** 11 ready presets change the whole look in one click, and the settings screen has a live
+  preview: every slider you move is shown on a mob right away.
+
+Works on any server: everything is drawn on your side, the server doesn't need anything installed. The mod doesn't change
+game mechanics, it only shows information the game already has.
 
 ## Features
 
