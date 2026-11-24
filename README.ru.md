@@ -10,6 +10,12 @@
 </p>
 
 <p align="center">
+  <a href="https://modrinth.com/mod/fancy-health-indicators"><img src="https://img.shields.io/modrinth/dt/fancy-health-indicators?logo=modrinth&label=Modrinth&color=00AF5C" alt="Modrinth downloads"></a>
+  <a href="https://www.curseforge.com/minecraft/mc-mods/fancy-health-indicators"><img src="https://img.shields.io/curseforge/dt/1821339?logo=curseforge&label=CurseForge&color=F16436" alt="CurseForge downloads"></a>
+  <a href="https://github.com/BbIJABNPOBATEJb/Fancy-Health-Indicators/releases"><img src="https://img.shields.io/github/downloads/BbIJABNPOBATEJb/Fancy-Health-Indicators/total?logo=github&label=GitHub" alt="GitHub downloads"></a>
+</p>
+
+<p align="center">
   <a href="README.md">English</a> | <b>Русский</b>
 </p>
 
