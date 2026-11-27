@@ -163,4 +163,25 @@ public class Mc {
         /*return entity.getEyePosition(1f);
         *///?}
     }
+
+    public void textInput(Object owner, boolean on) {
+        //? if >=26.3 {
+        /*com.mojang.blaze3d.platform.TextInputManager m = net.minecraft.client.Minecraft.getInstance().textInputManager();
+        if (on) m.startTextInput(owner);
+        else m.stopTextInput(owner);
+        *///?} else if >=26.1 {
+        /*com.mojang.blaze3d.platform.TextInputManager m = net.minecraft.client.Minecraft.getInstance().textInputManager();
+        if (on) m.startTextInput();
+        else m.stopTextInput();
+        *///?}
+    }
+
+    public String clipboard() {
+        String s = net.minecraft.client.Minecraft.getInstance().keyboardHandler.getClipboard();
+        return s == null ? "" : s;
+    }
+
+    public void setClipboard(String s) {
+        net.minecraft.client.Minecraft.getInstance().keyboardHandler.setClipboard(s);
+    }
 }

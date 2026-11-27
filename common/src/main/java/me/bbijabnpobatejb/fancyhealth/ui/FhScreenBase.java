@@ -41,7 +41,9 @@ public abstract class FhScreenBase extends Screen {
     //? if >=1.21.9 {
     @Override
     public boolean mouseClicked(MouseButtonEvent event, boolean doubleClick) {
-        return ui.mouseDown(event.x(), event.y(), event.button(), event.hasShiftDown());
+        boolean r = ui.mouseDown(event.x(), event.y(), event.button(), event.hasShiftDown());
+        ui.syncInput();
+        return r;
     }
 
     @Override
@@ -56,8 +58,9 @@ public abstract class FhScreenBase extends Screen {
 
     @Override
     public boolean keyPressed(KeyEvent event) {
-        if (ui.keyPressed(event.key(), event.hasControlDown())) return true;
-        return super.keyPressed(event);
+        boolean r = ui.keyPressed(event.key(), event.hasControlDown(), event.hasShiftDown());
+        ui.syncInput();
+        return r || super.keyPressed(event);
     }
 
     @Override
@@ -68,12 +71,16 @@ public abstract class FhScreenBase extends Screen {
 
     @Override
     public boolean charTyped(CharacterEvent event) {
-        return ui.charTyped(event.codepoint()) || super.charTyped(event);
+        boolean r = ui.charTyped(event.codepoint());
+        ui.syncInput();
+        return r || super.charTyped(event);
     }
     //?} else {
     /*@Override
     public boolean mouseClicked(double x, double y, int button) {
-        return ui.mouseDown(x, y, button, hasShiftDown());
+        boolean r = ui.mouseDown(x, y, button, hasShiftDown());
+        ui.syncInput();
+        return r;
     }
 
     @Override
@@ -88,8 +95,9 @@ public abstract class FhScreenBase extends Screen {
 
     @Override
     public boolean keyPressed(int key, int scancode, int modifiers) {
-        if (ui.keyPressed(key, hasControlDown())) return true;
-        return super.keyPressed(key, scancode, modifiers);
+        boolean r = ui.keyPressed(key, hasControlDown(), hasShiftDown());
+        ui.syncInput();
+        return r || super.keyPressed(key, scancode, modifiers);
     }
 
     @Override
@@ -100,7 +108,9 @@ public abstract class FhScreenBase extends Screen {
 
     @Override
     public boolean charTyped(char c, int modifiers) {
-        return ui.charTyped(c) || super.charTyped(c, modifiers);
+        boolean r = ui.charTyped(c);
+        ui.syncInput();
+        return r || super.charTyped(c, modifiers);
     }
     *///?}
 
@@ -115,6 +125,12 @@ public abstract class FhScreenBase extends Screen {
         return ui.scroll(x, y, v);
     }
     *///?}
+
+    @Override
+    public void removed() {
+        ui.releaseInput();
+        super.removed();
+    }
 
     @Override
     public boolean isPauseScreen() {

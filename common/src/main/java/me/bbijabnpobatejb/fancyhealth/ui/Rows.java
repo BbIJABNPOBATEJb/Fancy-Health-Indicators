@@ -101,6 +101,13 @@ public final class Rows {
             return false;
         }
 
+        public String editText() {
+            return "";
+        }
+
+        public void selectAll() {
+        }
+
         public boolean keyPressed(Host host, int key) {
             return false;
         }
@@ -370,6 +377,16 @@ public final class Rows {
         }
 
         @Override
+        public String editText() {
+            return buffer;
+        }
+
+        @Override
+        public void selectAll() {
+            fresh = true;
+        }
+
+        @Override
         protected void control(Canvas c, Host host, Ctx ctx) {
             float v = get.apply(cfg());
             float t = Math.max(0, Math.min(1, (v - min) / (max - min)));
@@ -561,6 +578,16 @@ public final class Rows {
         @Override
         public boolean editing() {
             return editing;
+        }
+
+        @Override
+        public String editText() {
+            return buffer;
+        }
+
+        @Override
+        public void selectAll() {
+            fresh = true;
         }
 
         private static String hex(int v) {

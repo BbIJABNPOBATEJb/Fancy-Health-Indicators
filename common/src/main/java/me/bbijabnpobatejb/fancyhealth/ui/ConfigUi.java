@@ -116,6 +116,12 @@ public class ConfigUi implements Rows.Host {
     String query = "";
     boolean searchFocus;
     float searchAnim;
+    final TextField field = new TextField(60);
+    int searchFirst;
+    boolean searchDrag;
+    long searchClickAt;
+    int searchClickPos = -1;
+    boolean textInput;
     final List<Rows.Row> results = new ArrayList<>();
     final Map<Rows.Row, Tab> resultTab = new java.util.HashMap<>();
     int resultCount;
@@ -136,6 +142,7 @@ public class ConfigUi implements Rows.Host {
     }
 
     public void setQuery(String q) {
+        field.reset(q);
         boolean was = searching();
         query = q;
         if (!was && searching()) SCROLLS.put(tab, scrollTarget);
@@ -220,6 +227,7 @@ public class ConfigUi implements Rows.Host {
     public void close() {
         SCROLLS.put(tab, scrollTarget);
         stopEditing(true);
+        releaseInput();
         dirty = true;
         save();
     }
@@ -274,7 +282,52 @@ public class ConfigUi implements Rows.Host {
         return debugShift != null ? debugShift : shiftHeld;
     }
 
+    public String fieldState() {
+        return "q=" + query + "|c=" + field.cursor + "|a=" + field.anchor + "|focus=" + searchFocus + "|input=" + textInput
+                + "|edit=" + (editing == null ? "-" : editing.editText());
+    }
+
+    public void focusSearch() {
+        searchFocus = true;
+    }
+
+    public void releaseInput() {
+        if (textInput) Mc.textInput(this, false);
+        textInput = false;
+    }
+
+    public void syncInput() {
+        boolean want = searchFocus || editing != null;
+        if (want == textInput) return;
+        textInput = want;
+        Mc.textInput(this, want);
+    }
+
+    private void applyField() {
+        if (!field.text.equals(query)) setQuery(field.text);
+    }
+
+    private float textX(String s, int i) {
+        return Theme.width(Theme.ui(s.substring(0, i))) * 0.8f;
+    }
+
+    private int searchIndex(double mx) {
+        String s = query.substring(Math.min(searchFirst, query.length()));
+        float x = (float) mx - (6 + 17);
+        int best = 0;
+        float bestD = Float.MAX_VALUE;
+        for (int i = 0; i <= s.length(); i++) {
+            float d = Math.abs(textX(s, i) - x);
+            if (d < bestD) {
+                bestD = d;
+                best = i;
+            }
+        }
+        return Math.min(query.length(), searchFirst + best);
+    }
+
     public void render(Canvas c, int mouseX, int mouseY) {
+        syncInput();
         long start = System.nanoTime();
         draw(c, mouseX, mouseY);
         renderMs = renderMs * 0.9 + (System.nanoTime() - start) / 1e6 * 0.1;
@@ -530,12 +583,21 @@ public class ConfigUi implements Rows.Host {
             Theme.small(c, Theme.ui(ph), tx, cy - 3.5f, Theme.TEXT3);
             if (searchFocus && (time % 1f) < 0.55f) Theme.rrect(c, tx - 0.5f, cy - 4.5f, tx + 0.5f, cy + 4.5f, 0, Theme.BLUE);
         } else {
-            String shown = query;
-            while (shown.length() > 1 && Theme.width(shown) * 0.8f > maxW) shown = shown.substring(1);
-            Component t = Theme.ui(shown);
-            Theme.small(c, t, tx, cy - 3.5f, Theme.TEXT);
-            float caret = tx + Theme.width(t) * 0.8f + 0.5f;
-            if (searchFocus && (time % 1f) < 0.55f) Theme.rrect(c, caret, cy - 4.5f, caret + 1, cy + 4.5f, 0, Theme.BLUE);
+            int cur = field.cursor;
+            searchFirst = Math.min(searchFirst, cur);
+            while (searchFirst < cur && textX(query.substring(searchFirst), cur - searchFirst) > maxW) searchFirst++;
+            while (searchFirst > 0 && textX(query.substring(searchFirst - 1), query.length() - searchFirst + 1) <= maxW) searchFirst--;
+            String rest = query.substring(searchFirst);
+            int end = rest.length();
+            while (end > 0 && textX(rest, end) > maxW) end--;
+            String shown = rest.substring(0, end);
+            if (searchFocus && field.hasSelection()) {
+                int a = Math.max(0, Math.min(end, field.selStart() - searchFirst)), b = Math.max(0, Math.min(end, field.selEnd() - searchFirst));
+                if (b > a) Theme.rrect(c, tx + textX(shown, a), cy - 5, tx + textX(shown, b) + 0.5f, cy + 4.5f, 1, 0x800A84FF);
+            }
+            Theme.small(c, Theme.ui(shown), tx, cy - 3.5f, Theme.TEXT);
+            float caret = tx + textX(rest, Math.max(0, Math.min(rest.length(), cur - searchFirst))) + 0.5f;
+            if (searchFocus && (time % 1f) < 0.55f) Theme.rrect(c, caret - 0.5f, cy - 4.5f, caret + 0.5f, cy + 4.5f, 0, Theme.BLUE);
             boolean overX = Theme.in(mx, my, x1 - 13, y0, x1, y1);
             Theme.circle(c, x1 - 7, cy, 5, overX ? 0xFF8E8E93 : 0xFF5A5A5F);
             Theme.icon(c, 9, x1 - 7, cy, 6, 0xFF1C1C1E);
@@ -641,7 +703,20 @@ public class ConfigUi implements Rows.Host {
                 if (searching() && mx >= sideW - 19) {
                     setQuery("");
                     Sounds.play("click");
+                    searchFocus = true;
+                    return true;
                 }
+                int at = searchIndex(mx);
+                long now = System.currentTimeMillis();
+                if (searchFocus && at == searchClickPos && now - searchClickAt < 350) {
+                    field.selectWord(at);
+                    searchClickAt = 0;
+                } else {
+                    field.moveTo(at, shiftDown && searchFocus);
+                    searchClickAt = now;
+                    searchDrag = true;
+                }
+                searchClickPos = at;
                 searchFocus = true;
                 return true;
             }
@@ -795,6 +870,10 @@ public class ConfigUi implements Rows.Host {
     }
 
     public boolean mouseDrag(double mx, double my) {
+        if (searchDrag) {
+            field.moveTo(searchIndex(mx), true);
+            return true;
+        }
         if (popup != null) {
             popup.drag(mx, my);
             return true;
@@ -811,6 +890,7 @@ public class ConfigUi implements Rows.Host {
     }
 
     public boolean mouseUp(double mx, double my, int button) {
+        searchDrag = false;
         if (popup != null) popup.release();
         if (active != null) active.release();
         active = null;
@@ -826,9 +906,21 @@ public class ConfigUi implements Rows.Host {
         return false;
     }
 
-    public boolean keyPressed(int key, boolean ctrl) {
+    public boolean keyPressed(int key, boolean ctrl, boolean shift) {
         if (key == me.bbijabnpobatejb.fancyhealth.compat.Keys.LSHIFT || key == me.bbijabnpobatejb.fancyhealth.compat.Keys.RSHIFT) shiftHeld = true;
         if (editing != null) {
+            if (ctrl && key == me.bbijabnpobatejb.fancyhealth.compat.Keys.A) {
+                editing.selectAll();
+                return true;
+            }
+            if (ctrl && key == me.bbijabnpobatejb.fancyhealth.compat.Keys.C) {
+                Mc.setClipboard(editing.editText());
+                return true;
+            }
+            if (ctrl && key == me.bbijabnpobatejb.fancyhealth.compat.Keys.V) {
+                Mc.clipboard().trim().codePoints().forEach(cp -> editing.charTyped(this, cp));
+                return true;
+            }
             editing.keyPressed(this, key);
             if (!editing.editing()) editing = null;
             return true;
@@ -839,6 +931,7 @@ public class ConfigUi implements Rows.Host {
         }
         if (ctrl && key == me.bbijabnpobatejb.fancyhealth.compat.Keys.F) {
             searchFocus = true;
+            field.selectAll();
             Sounds.play("click", 1.3f);
             return true;
         }
@@ -848,30 +941,12 @@ public class ConfigUi implements Rows.Host {
             return true;
         }
         if (searchFocus) {
-            if (key == me.bbijabnpobatejb.fancyhealth.compat.Keys.BACKSPACE) {
-                if (searching()) {
-                    String q = query;
-                    if (ctrl) {
-                        q = q.stripTrailing();
-                        int i = q.lastIndexOf(' ');
-                        q = i < 0 ? "" : q.substring(0, i + 1);
-                    } else {
-                        q = q.substring(0, q.length() - 1);
-                    }
-                    setQuery(q);
-                }
+            if (field.key(key, ctrl, shift)) {
+                applyField();
                 return true;
             }
             if (key == me.bbijabnpobatejb.fancyhealth.compat.Keys.RETURN || key == me.bbijabnpobatejb.fancyhealth.compat.Keys.NUMPAD_ENTER) {
                 searchFocus = false;
-                return true;
-            }
-            if (ctrl && key == me.bbijabnpobatejb.fancyhealth.compat.Keys.V) {
-                String clip = net.minecraft.client.Minecraft.getInstance().keyboardHandler.getClipboard();
-                if (clip != null) {
-                    String q = (query + clip.replaceAll("\\s+", " "));
-                    setQuery(q.substring(0, Math.min(60, q.length())));
-                }
                 return true;
             }
             return key != me.bbijabnpobatejb.fancyhealth.compat.Keys.TAB;
@@ -888,10 +963,9 @@ public class ConfigUi implements Rows.Host {
             editing.charTyped(this, cp);
             return true;
         }
-        if (popup != null || cp < 32 || query.length() >= 60) return false;
-        if (!searchFocus && !Character.isLetterOrDigit(cp) && cp != '#') return false;
-        searchFocus = true;
-        if (!(cp == ' ' && (query.isEmpty() || query.endsWith(" ")))) setQuery(query + new String(Character.toChars(cp)));
+        if (popup != null || !searchFocus) return false;
+        if (!field.type(cp)) return false;
+        applyField();
         return true;
     }
 

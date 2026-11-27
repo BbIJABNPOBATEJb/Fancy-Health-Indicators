@@ -208,6 +208,32 @@ public class Theme {
         c.pop();
     }
 
+    public void rrectBottom(Canvas c, float x0, float y0, float x1, float y1, float r, float band, int color) {
+        if ((color >>> 24) == 0 || x1 <= x0 || y1 <= y0) return;
+        int s = guiScale();
+        int X0 = Math.round(x0 * s), Y0 = Math.round(y0 * s);
+        int W = Math.max(1, Math.round((x1 - x0) * s)), H = Math.max(1, Math.round((y1 - y0) * s));
+        int R = Math.max(0, Math.min(CORNER_MAX, Math.min(Math.round(r * s), Math.min(W / 2, H / 2))));
+        if (R > 0 && W - 2 * R == 1) W--;
+        if (R > 0 && H - 2 * R == 1) H--;
+        int X1 = X0 + W, Y1 = Y0 + H;
+        int B = Math.max(1, Math.min(H, Math.round(band * s)));
+        c.push();
+        c.scale(1f / s);
+        if (R == 0) {
+            c.fill(X0, Y1 - B, X1, Y1, color);
+        } else {
+            int u = R * (R - 1) / 2 + 2 * (R - 1) + 1;
+            int slot = CORNER_MAX + 2;
+            int k = Math.min(B, R);
+            c.sprite(CORNERS, X0, Y1 - k, R, k, u, slot * 2 + 1 + R - k, CORNERS_W, CORNERS_H, color);
+            c.sprite(CORNERS, X1 - R, Y1 - k, R, k, u, slot * 3 + 1 + R - k, CORNERS_W, CORNERS_H, color);
+            c.fill(X0 + R, Y1 - k, X1 - R, Y1, color);
+            if (B > R) c.fill(X0, Y1 - B, X1, Y1 - R, color);
+        }
+        c.pop();
+    }
+
     public void icon(Canvas c, int index, float cx, float cy, float size, int color) {
         int s = guiScale();
         int target = Math.max(ICON_MIN_PX, Math.round(size * s));

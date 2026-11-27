@@ -460,7 +460,7 @@ public class Preview {
             cellHover[i] += ((over ? 1 : 0) - cellHover[i]) * Math.min(1f, dt * 14f);
             if (cellHover[i] > 0.02f) Theme.shadow(c, cx0 + 2, cy0 + 2, cx0 + cw - 2, cy0 + ch - 2, 9, (int) (80 * cellHover[i]));
             Theme.rrect(c, cx0 + 2, cy0 + 2, cx0 + cw - 2, cy0 + ch - 2, 9, Theme.mix(on ? 0x1EFFFFFF : 0x0CFFFFFF, 0x30FFFFFF, cellHover[i]));
-            if (cellHover[i] > 0.02f) Theme.rrect(c, cx0 + 2, cy0 + ch - 4, cx0 + cw - 2, cy0 + ch - 2, 1, Theme.mix(0x000A84FF, on ? Theme.RED : Theme.GREEN, cellHover[i]));
+            if (cellHover[i] > 0.02f) Theme.rrectBottom(c, cx0 + 2, cy0 + 2, cx0 + cw - 2, cy0 + ch - 2, 9, 2, Theme.mix(0x000A84FF, on ? Theme.RED : Theme.GREEN, cellHover[i]));
             float bbh = e != null ? Math.max(0.5f, e.getBbHeight()) : 1.8f;
             float bbw = e != null ? Math.max(0.5f, e.getBbWidth()) : 0.6f;
             int size = (int) Math.max(6, Math.min((ch - 40) / bbh, (cw - 16) / Math.max(bbw, 0.8f)));
